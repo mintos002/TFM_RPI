@@ -95,14 +95,14 @@ bool Communication::start() {
         return false;
     }
     print_debug("Secondary interface: Got connection");
-//    comThread = std::thread(&Communication::run, this);
-    this->run();
+    comThread = std::thread(&Communication::run, this);
+    //this->run();
     return true;
 }
 
 void Communication::halt() {
     keepalive = false;
-//    comThread.join();
+    comThread.join();
 }
 
 void Communication::run() {

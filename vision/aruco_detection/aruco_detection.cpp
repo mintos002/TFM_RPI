@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     double totalTime = 0;
     int totalIterations = 0;
     
-    vector< Affine3d > poses(8);
+    vector< marker > poses2(8);
 
     while (inputVideo.grab()) {
         Mat image, imageCopy;
@@ -152,17 +152,24 @@ int main(int argc, char *argv[]) {
             
             for (unsigned int i = 0; i < ids.size(); i++) {
                 aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
-                cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl;
+                cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
                                 
                 Mat rotMat;    
                 cv::Rodrigues(rvecs[i], rotMat);
                 cout << "rotMat = " << endl << " " << rotMat << endl << endl;
-                poses[i] = Affine3d(rotMat, tvecs[i]);
-                cout << "AFFINE = " << endl << " " << poses[i].matrix << endl;
+                Affine3d pose1=Affine3d(rotMat, tvecs[i]);
                 
-//                Affine3d distBtnMarkers = poses[1] /* poses[2].inv()*/;
-//                cout << "DDDDDDDDDDDDDDDDD" << endl;
-//                cout << "Distance between markers: " << distBtnMarkers.translation() << endl;
+                Affine3d distBtnMarkers = pose1 * poses2[ids[i]].homMatrix.inv();
+                cout << "Distance between markers: Rmat" << endl << " " << distBtnMarkers.translation() << endl << endl;
+                cout << "Distance between markers: tvec" << endl << " " << distBtnMarkers.rotation() << endl << endl;
+
+                marker b;
+                b.id = ids[i]; b.homMatrix = pose1;
+                poses2[ids[i]] = b;
+                
+                cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
+                cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].homMatrix.matrix << endl << endl;
+
                 cout << "----------------" << endl;
             }
         }

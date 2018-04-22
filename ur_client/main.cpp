@@ -25,7 +25,8 @@ int main(int argc, char** argv) {
 //    Communication com("192.168.1.128");
     print_debug("START MAIN");
     bool comack;
-    Communication robot("158.42.206.10");
+    //Communication robot("158.42.206.10");
+    Communication robot("192.168.238.142");
     comack = robot.start();
     
 //    robot.run();
