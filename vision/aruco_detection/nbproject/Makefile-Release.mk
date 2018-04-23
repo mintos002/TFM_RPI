@@ -35,7 +35,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/aruco_detection.o
+	${OBJECTDIR}/aruco_detection.o \
+	${OBJECTDIR}/print_out.o \
+	${OBJECTDIR}/rt_communication.o \
+	${OBJECTDIR}/rt_data_handler.o
 
 
 # C Compiler Flags
@@ -66,6 +69,21 @@ ${OBJECTDIR}/aruco_detection.o: aruco_detection.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aruco_detection.o aruco_detection.cpp
+
+${OBJECTDIR}/print_out.o: print_out.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/print_out.o print_out.cpp
+
+${OBJECTDIR}/rt_communication.o: rt_communication.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/rt_communication.o rt_communication.cpp
+
+${OBJECTDIR}/rt_data_handler.o: rt_data_handler.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/rt_data_handler.o rt_data_handler.cpp
 
 # Subprojects
 .build-subprojects:

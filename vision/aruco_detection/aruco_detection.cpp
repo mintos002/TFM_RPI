@@ -16,9 +16,11 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/aruco.hpp>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <opencv2/core/affine.hpp>
 #include <opencv2/calib3d.hpp>
+#include <opencv2/imgproc.hpp>
 
 using namespace std;
 using namespace cv;
@@ -70,9 +72,11 @@ int main(int argc, char *argv[]) {
     bool showRejected = parser.has("r");
     bool estimatePose = true;
     float markerLength = parser.get<float>("l");
-
+    ofstream outFile("outputResult.txt");
 
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
+    
+    
 
     // Create DetectorParameters and refine corners
     Ptr<aruco::DetectorParameters> detectorParams = aruco::DetectorParameters::create();
@@ -116,14 +120,15 @@ int main(int argc, char *argv[]) {
 
     double totalTime = 0;
     int totalIterations = 0;
-    
-    vector< marker > poses2(8);
+
+    vector< Affine3d > poses2(8);
 
     while (inputVideo.grab()) {
         Mat image, imageCopy;
         inputVideo.retrieve(image);
 
-        double tick = (double) getTickCount(); // START time measuring
+        // START time measuring
+        double tick = (double) getTickCount();
 
         vector< int > ids;
         vector< vector< Point2f > > corners, rejected;
@@ -143,37 +148,44 @@ int main(int argc, char *argv[]) {
             cout << "Detection Time = " << currentTime * 1000 << " ms " << "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
         }
 
-        // Draw results
+        // Draw midle rectangle and marker vectors
         image.copyTo(imageCopy);
+        int x = 270;
+        int y = 190;
+        int width = 100;
+        int height = width;
+        Rect rect(x, y, width, height);
+        Point pt1(x, y), pt2(x + width, y + height);; // tvecs ~ 0.49
+        rectangle(imageCopy, pt1, pt2, Scalar(255, 0, 0), 2);
+        
         if (ids.size() > 0) {
             aruco::drawDetectedMarkers(imageCopy, corners, ids);
-            
+
             cout << "----------------" << endl;
-            
+
             for (unsigned int i = 0; i < ids.size(); i++) {
                 aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
                 cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
-                                
-                Mat rotMat;    
+
+                Mat rotMat;
                 cv::Rodrigues(rvecs[i], rotMat);
                 cout << "rotMat = " << endl << " " << rotMat << endl << endl;
-                Affine3d pose1=Affine3d(rotMat, tvecs[i]);
-                
-                Affine3d distBtnMarkers = pose1 * poses2[ids[i]].homMatrix.inv();
+                Affine3d pose1 = Affine3d(rotMat, tvecs[i]);
+
+                Affine3d distBtnMarkers = pose1 * poses2[ids[i]].inv();
                 cout << "Distance between markers: Rmat" << endl << " " << distBtnMarkers.translation() << endl << endl;
                 cout << "Distance between markers: tvec" << endl << " " << distBtnMarkers.rotation() << endl << endl;
 
-                marker b;
-                b.id = ids[i]; b.homMatrix = pose1;
-                poses2[ids[i]] = b;
-                
+                poses2[ids[i]] = pose1;
+
                 cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
-                cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].homMatrix.matrix << endl << endl;
+                cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
 
                 cout << "----------------" << endl;
             }
         }
 
+        // Show rejected markers if there are
         if (showRejected && rejected.size() > 0)
             aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 

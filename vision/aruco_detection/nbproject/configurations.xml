@@ -4,6 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>print_out.h</itemPath>
+      <itemPath>rt_communication.h</itemPath>
+      <itemPath>rt_data_handler.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -14,6 +17,9 @@
                    projectFiles="true">
       <itemPath>aruco_detection.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
+      <itemPath>print_out.cpp</itemPath>
+      <itemPath>rt_communication.cpp</itemPath>
+      <itemPath>rt_data_handler.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -42,6 +48,7 @@
         <linkerTool>
           <linkerLibItems>
             <linkerOptionItem>-I/usr/local/include/opencv -I/usr/local/include -L/usr/local/lib -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_photo -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_img_hash -lopencv_line_descriptor -lopencv_optflow -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_surface_matching -lopencv_tracking -lopencv_datasets -lopencv_text -lopencv_dnn -lopencv_plot -lopencv_ml -lopencv_xfeatures2d -lopencv_shape -lopencv_video -lopencv_ximgproc -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_flann -lopencv_xobjdetect -lopencv_imgcodecs -lopencv_objdetect -lopencv_xphoto -lopencv_imgproc -lopencv_core -lraspicam -lraspicam_cv</linkerOptionItem>
+            <linkerOptionItem>-pthread</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -51,6 +58,18 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="print_out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="rt_communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="rt_communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="rt_data_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="rt_data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -79,6 +98,18 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="print_out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="rt_communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="rt_communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="rt_data_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="rt_data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
