@@ -21,6 +21,10 @@
 #include <opencv2/core/affine.hpp>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
+#include <math.h>
+#include <unistd.h>
+
+#include "rt_communication.h"
 
 using namespace std;
 using namespace cv;
@@ -48,10 +52,78 @@ static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeff
     return true;
 }
 
-struct marker {
-    int id;
-    Affine3d homMatrix;
-};
+static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, vector< Affine3d >& poses2) {
+    if (ids.size() > 0) {
+        file.open("cmdout.txt", fstream::in | fstream::out | fstream::app);
+        for (int i = 0; i < ids.size(); i++) {
+            cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
+
+            Affine3d pose1 = Affine3d(rvecs[i], tvecs[i]);
+
+            Affine3d distBtnMarkers = pose1 * poses2[ids[i]].inv();
+            //            cout << "Distance between markers: Rmat" << endl << " " << distBtnMarkers.translation() << endl << endl;
+            //            cout << "Distance between markers: tvec" << endl << " " << distBtnMarkers.rotation() << endl << endl;
+
+            poses2[ids[i]] = pose1;
+
+            //            cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
+            //            cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
+//            fprintf(file, "Reference Base:");
+            
+            file << "----------------" << endl;
+            file << "ID:" << ids[i] << endl;
+            file << "Reference Base:" << endl;
+            char ak[100];
+//            sprintf(ak, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], fmod(rvecs[0].val[0] + M_PI, M_PI), rvecs[0].val[1], rvecs[0].val[2]);
+            sprintf(ak, "movej(p[%f, %f, %f, 0.0, 1.57079, 0.0], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], rvecs[0].val[0], rvecs[0].val[1], rvecs[0].val[2]);
+
+            file << ak;
+//            file << "Distance btw markers:" << endl;
+//            char ka[100];
+//            sprintf(ka, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", distBtnMarkers.translation()[0], distBtnMarkers.translation()[1], distBtnMarkers.translation()[2], distBtnMarkers.rvec()[0], distBtnMarkers.rvec()[1], distBtnMarkers.rvec()[2]);
+//            file << ka;
+            file << "----------------" << endl;
+
+            file.close();
+        }
+    }
+}
+
+static void markerProcesor(RtCommunication& com, Affine3d& offset, int id, bool detectedBfr) { // Marcador antiguo marcador nuevo
+    if (!detectedBfr) {
+        switch (id) {
+            case 0:
+                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                break;
+            case 1:
+                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                break;
+            case 2:
+                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                break;
+            case 3:
+                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                break;
+            case 4:
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, 0);
+                break;
+            case 5:
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, 0);
+                break;
+            case 6:
+                com.set_digital_out(4, true);
+                break;
+            case 7:
+                com.set_digital_out(4, false);
+                break;
+        }
+        usleep(10000000);
+
+    } else {
+        if (id != 6 || id != 7)
+            com.movejp(offset);
+    }
+}
 
 /*
  *
@@ -70,13 +142,49 @@ int main(int argc, char *argv[]) {
     int camId = 0;
     int vidFps = parser.get<float>("f");
     bool showRejected = parser.has("r");
-    bool estimatePose = true;
     float markerLength = parser.get<float>("l");
-    ofstream outFile("outputResult.txt");
+    
+    ofstream file;
+
+    
 
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
-    
-    
+    // COMMUNICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+    //    RtCommunication com("192.168.238.142");
+
+
+    //    RtDataHandler dataHandler;
+    //    RtCommunication com("158.42.206.10");
+    //    com.start();
+    //    usleep(2000000);
+    //    print_debug("WWWWW");
+    //    usleep(2000000);
+    //    com.addCommandToQueue("set_digital_out(4,True)");
+    //    usleep(2000000);
+    //    print_debug("MMMMM");
+    //    com.addCommandToQueue("set_digital_out(4,False)");
+    //    usleep(2000000);    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Create DetectorParameters and refine corners
     Ptr<aruco::DetectorParameters> detectorParams = aruco::DetectorParameters::create();
@@ -122,8 +230,12 @@ int main(int argc, char *argv[]) {
     int totalIterations = 0;
 
     vector< Affine3d > poses2(8);
+    vector< bool > detectedBefore(8, false);
+    vector< int > idsPast;
 
     while (inputVideo.grab()) {
+        //        cout << "Version = " << dataHandler.getVersion() << endl;    
+
         Mat image, imageCopy;
         inputVideo.retrieve(image);
 
@@ -155,34 +267,29 @@ int main(int argc, char *argv[]) {
         int width = 100;
         int height = width;
         Rect rect(x, y, width, height);
-        Point pt1(x, y), pt2(x + width, y + height);; // tvecs ~ 0.49
+        Point pt1(x, y), pt2(x + width, y + height);
+        ; // tvecs ~ 0.49
         rectangle(imageCopy, pt1, pt2, Scalar(255, 0, 0), 2);
-        
+
         if (ids.size() > 0) {
             aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
             cout << "----------------" << endl;
+            // get the distance btw markers
+            distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
 
             for (unsigned int i = 0; i < ids.size(); i++) {
                 aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
-                cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
-
-                Mat rotMat;
-                cv::Rodrigues(rvecs[i], rotMat);
-                cout << "rotMat = " << endl << " " << rotMat << endl << endl;
-                Affine3d pose1 = Affine3d(rotMat, tvecs[i]);
-
-                Affine3d distBtnMarkers = pose1 * poses2[ids[i]].inv();
-                cout << "Distance between markers: Rmat" << endl << " " << distBtnMarkers.translation() << endl << endl;
-                cout << "Distance between markers: tvec" << endl << " " << distBtnMarkers.rotation() << endl << endl;
-
-                poses2[ids[i]] = pose1;
-
-                cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
-                cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
-
-                cout << "----------------" << endl;
             }
+            // Change idsPast
+            cout << "idsCurrent = " << ids.size() << endl;
+            cout << "idsPast = " << idsPast.size() << endl;
+
+            if (idsPast.size() != ids.size())
+                cout << "DASDOANSDKNFWLJEBFWILANKWDFBAOIDFBWEKFBAWDBASDPFI" << endl;
+            idsPast = ids;
+
+
         }
 
         // Show rejected markers if there are
@@ -190,84 +297,16 @@ int main(int argc, char *argv[]) {
             aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
         namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
+
+        cout << "----------------" << endl;
         imshow("RPi Camera", imageCopy);
         char key = (char) waitKey(waitTime);
-        if (key == 27) break;
+        if (key == 27) {
+            break;
+        }
     }
 
     return 0;
 }
 
 
-
-
-
-
-
-
-
-//void detectMarkers(InputArray _image, const Ptr<Dictionary> &_dictionary, OutputArrayOfArrays _corners,
-//                   OutputArray _ids, const Ptr<DetectorParameters> &_params,
-//                   OutputArrayOfArrays _rejectedImgPoints, InputArrayOfArrays camMatrix, InputArrayOfArrays distCoeff) {
-//
-//    CV_Assert(!_image.empty());
-//
-//    Mat grey;
-//    _convertToGrey(_image.getMat(), grey);
-//
-//    /// STEP 1: Detect marker candidates
-//    vector< vector< Point2f > > candidates;
-//    vector< vector< Point > > contours;
-//    vector< int > ids;
-//
-//    /// STEP 1.a Detect marker candidates :: using AprilTag
-//    if(_params->cornerRefinementMethod == CORNER_REFINE_APRILTAG)
-//        _apriltag(grey, _params, candidates, contours);
-//
-//    /// STEP 1.b Detect marker candidates :: traditional way
-//    else
-//        _detectCandidates(grey, candidates, contours, _params);
-//
-//    /// STEP 2: Check candidate codification (identify markers)
-//    _identifyCandidates(grey, candidates, contours, _dictionary, candidates, ids, _params,
-//                        _rejectedImgPoints);
-//
-//    /// STEP 3: Filter detected markers;
-//    _filterDetectedMarkers(candidates, ids, contours);
-//
-//    // copy to output arrays
-//    _copyVector2Output(candidates, _corners);
-//    Mat(ids).copyTo(_ids);
-//
-//    /// STEP 4: Corner refinement :: use corner subpix
-//    if( _params->cornerRefinementMethod == CORNER_REFINE_SUBPIX ) {
-//        CV_Assert(_params->cornerRefinementWinSize > 0 && _params->cornerRefinementMaxIterations > 0 &&
-//                  _params->cornerRefinementMinAccuracy > 0);
-//
-//        //// do corner refinement for each of the detected markers
-//        // for (unsigned int i = 0; i < _corners.cols(); i++) {
-//        //    cornerSubPix(grey, _corners.getMat(i),
-//        //                 Size(params.cornerRefinementWinSize, params.cornerRefinementWinSize),
-//        //                 Size(-1, -1), TermCriteria(TermCriteria::MAX_ITER | TermCriteria::EPS,
-//        //                                            params.cornerRefinementMaxIterations,
-//        //                                            params.cornerRefinementMinAccuracy));
-//        //}
-//
-//        // this is the parallel call for the previous commented loop (result is equivalent)
-//        parallel_for_(Range(0, _corners.cols()),
-//                      MarkerSubpixelParallel(&grey, _corners, _params));
-//    }
-//
-//    /// STEP 4, Optional : Corner refinement :: use contour container
-//    if( _params->cornerRefinementMethod == CORNER_REFINE_CONTOUR){
-//
-//        if(! _ids.empty()){
-//
-//            // do corner refinement using the contours for each detected markers
-//            parallel_for_(Range(0, _corners.cols()), MarkerContourParallel(contours, candidates, camMatrix.getMat(), distCoeff.getMat()));
-//
-//            // copy the corners to the output array
-//            _copyVector2Output(candidates, _corners);
-//        }
-//    }
-//}

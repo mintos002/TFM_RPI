@@ -16,6 +16,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>aruco_detection.cpp</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/cmdout.txt</itemPath>
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
       <itemPath>print_out.cpp</itemPath>
       <itemPath>rt_communication.cpp</itemPath>
@@ -53,6 +54,8 @@
         </linkerTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/out_camera_data_640_100.xml"
             ex="false"
@@ -93,6 +96,8 @@
         </asmTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/out_camera_data_640_100.xml"
             ex="false"
