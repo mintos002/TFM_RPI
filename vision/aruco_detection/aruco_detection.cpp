@@ -56,8 +56,28 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
     if (ids.size() > 0) {
         file.open("cmdout.txt", fstream::in | fstream::out | fstream::app);
         for (int i = 0; i < ids.size(); i++) {
-            cout << "ID = " << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
-
+            // Define xyz rxryrz and some security checks
+            double x = tvecs[i].val[0];
+            double y = tvecs[i].val[1];
+            double z = tvecs[i].val[2];
+            double rx = rvecs[i].val[0];
+            double ry = rvecs[i].val[1];
+            double rz = rvecs[i].val[2];
+            
+            // Change perspective respect camera
+            //Security limit cap
+//            if(abs(x) > 0.5)
+//                x = 0.5;
+//            if(abs(y) > 0.5)
+//                y = 0.5;
+//            if(z > 0.5)
+//                z = 0.5;
+//            if(z < -0.10)
+//                z = -0.10;
+            
+            cout << "ID real =" << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
+            cout << "ID secured =" << ids[i] << endl << " rvecs = [" << rx << ", " << ry << ", " << rz << "]" << endl << " tvecs = [" << x << ", " << y << ", " << z << "]" << endl << endl;
+            
             Affine3d pose1 = Affine3d(rvecs[i], tvecs[i]);
 
             Affine3d distBtnMarkers = pose1 * poses2[ids[i]].inv();
@@ -68,16 +88,15 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
 
             //            cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
             //            cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
-//            fprintf(file, "Reference Base:");
             
-            file << "----------------" << endl;
-            file << "ID:" << ids[i] << endl;
-            file << "Reference Base:" << endl;
-            char ak[100];
-//            sprintf(ak, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], fmod(rvecs[0].val[0] + M_PI, M_PI), rvecs[0].val[1], rvecs[0].val[2]);
-            sprintf(ak, "movej(p[%f, %f, %f, 0.0, 1.57079, 0.0], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], rvecs[0].val[0], rvecs[0].val[1], rvecs[0].val[2]);
-
-            file << ak;
+//            file << "----------------" << endl;
+//            file << "ID:" << ids[i] << endl;
+//            file << "Reference Base:" << endl;
+//            char ak[100];
+////            sprintf(ak, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], fmod(rvecs[0].val[0] + M_PI, M_PI), rvecs[0].val[1], rvecs[0].val[2]);
+//            sprintf(ak, "movej(p[%f, %f, %f, 2.399, -2.422, 2.424], a=1.0, v=1.0)\n", x, y, z);
+//            file << ak;
+            
 //            file << "Distance btw markers:" << endl;
 //            char ka[100];
 //            sprintf(ka, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", distBtnMarkers.translation()[0], distBtnMarkers.translation()[1], distBtnMarkers.translation()[2], distBtnMarkers.rvec()[0], distBtnMarkers.rvec()[1], distBtnMarkers.rvec()[2]);
@@ -89,40 +108,62 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
     }
 }
 
-static void markerProcesor(RtCommunication& com, Affine3d& offset, int id, bool detectedBfr) { // Marcador antiguo marcador nuevo
-    if (!detectedBfr) {
-        switch (id) {
+static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& remainId) { // Marcador antiguo marcador nuevo
+    // check if there are any marker detected
+    if(ids.size() < 1) return;
+    // initatie detection tag and posible next position
+    bool detected = false;
+    int nextpp = -1;
+    // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
+    for (int i = 0; i < ids.size(); i++) {
+        if (ids[i] == 6 || ids[i] == 7) {
+            switch (ids[i]) {
+                case 6:
+                    com.set_digital_out(4, true);
+                case 7:
+                    com.set_digital_out(4, false);
+            }
+        } else {
+            if (ids[i] == remainId) {
+                // if detected, send offset movement and exit the function
+                detected = true;
+                //                com.movejp(offset);
+                return;
+            } else {
+                nextpp = ids[i];
+            }
+        }
+    }
+    // if remainId is not in ids, go to nextpp reference position
+    if (!detected) {
+        remainId = nextpp;
+        switch (remainId) {
             case 0:
-                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(0, -M_PI/2, -M_PI/2, 0, M_PI/2, 0);
                 break;
             case 1:
-                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(-M_PI/2, -M_PI/2, -M_PI/2, 0, M_PI/2, 0);
                 break;
             case 2:
-                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(-M_PI, -M_PI/2, -M_PI/2, 0, M_PI/2, 0);
                 break;
             case 3:
-                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(M_PI/2, -M_PI/2, -M_PI/2, 0, M_PI/2, 0);
                 break;
             case 4:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, 0);
+                com.movej(0, -M_PI/2, -M_PI/2, -M_PI/2, M_PI/2, 0);
                 break;
             case 5:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, 0);
+                com.movej(0, -M_PI/2, -M_PI/2, -M_PI/2, -M_PI/2, 0);
                 break;
-            case 6:
-                com.set_digital_out(4, true);
-                break;
-            case 7:
-                com.set_digital_out(4, false);
+            default:
                 break;
         }
-        usleep(10000000);
-
-    } else {
-        if (id != 6 || id != 7)
-            com.movejp(offset);
-    }
+        // wait 5s, the robot will take 4s to reach the reference position
+        print_info("The robot is going to the initial position...");
+        if (remainId != -1)
+            usleep(5000000);
+    } 
 }
 
 /*
@@ -145,9 +186,7 @@ int main(int argc, char *argv[]) {
     float markerLength = parser.get<float>("l");
     
     ofstream file;
-
     
-
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
     // COMMUNICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -155,13 +194,13 @@ int main(int argc, char *argv[]) {
 
 
 
-    //    RtCommunication com("192.168.238.142");
+        RtCommunication com("192.168.238.142");
 
 
-    //    RtDataHandler dataHandler;
-    //    RtCommunication com("158.42.206.10");
-    //    com.start();
-    //    usleep(2000000);
+//        RtDataHandler dataHandler;
+//        RtCommunication com("158.42.206.10");
+        com.start();
+//        usleep(5000000);
     //    print_debug("WWWWW");
     //    usleep(2000000);
     //    com.addCommandToQueue("set_digital_out(4,True)");
@@ -169,15 +208,6 @@ int main(int argc, char *argv[]) {
     //    print_debug("MMMMM");
     //    com.addCommandToQueue("set_digital_out(4,False)");
     //    usleep(2000000);    
-
-
-
-
-
-
-
-
-
 
 
 
@@ -230,8 +260,7 @@ int main(int argc, char *argv[]) {
     int totalIterations = 0;
 
     vector< Affine3d > poses2(8);
-    vector< bool > detectedBefore(8, false);
-    vector< int > idsPast;
+    int remainId = -1;
 
     while (inputVideo.grab()) {
         //        cout << "Version = " << dataHandler.getVersion() << endl;    
@@ -260,48 +289,53 @@ int main(int argc, char *argv[]) {
             cout << "Detection Time = " << currentTime * 1000 << " ms " << "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
         }
 
-        // Draw midle rectangle and marker vectors
+        // Draw midle rectangle and lines in image
         image.copyTo(imageCopy);
         int x = 270;
         int y = 190;
         int width = 100;
         int height = width;
-        Rect rect(x, y, width, height);
+//        Rect rect(x, y, width, height);
         Point pt1(x, y), pt2(x + width, y + height);
-        ; // tvecs ~ 0.49
+         // tvecs ~ 0.49
         rectangle(imageCopy, pt1, pt2, Scalar(255, 0, 0), 2);
+        
+        
+        line(imageCopy, Point(0,360), Point(640, 360), Scalar( 255, 0, 255 ), 2, 8);
+        line(imageCopy, Point(320,0), Point(320, 480), Scalar( 255, 0, 255 ), 2, 8);
 
+        // Draw marker vectors
         if (ids.size() > 0) {
             aruco::drawDetectedMarkers(imageCopy, corners, ids);
+            cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl << "CORNERS: " << endl << corners[0] << endl << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
 
             cout << "----------------" << endl;
             // get the distance btw markers
             distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
+            markerProcesor(com, ids, rvecs, tvecs, remainId);
 
+            
             for (unsigned int i = 0; i < ids.size(); i++) {
                 aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
             }
-            // Change idsPast
+            // Actualize carrying
             cout << "idsCurrent = " << ids.size() << endl;
-            cout << "idsPast = " << idsPast.size() << endl;
-
-            if (idsPast.size() != ids.size())
-                cout << "DASDOANSDKNFWLJEBFWILANKWDFBAOIDFBWEKFBAWDBASDPFI" << endl;
-            idsPast = ids;
-
-
+            cout << "remainId = " << remainId << endl;
         }
 
         // Show rejected markers if there are
         if (showRejected && rejected.size() > 0)
             aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
-        namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
-
         cout << "----------------" << endl;
+        
+        namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
         imshow("RPi Camera", imageCopy);
+        
         char key = (char) waitKey(waitTime);
         if (key == 27) {
+//            com.halt();
+//            destroyWindow("RPi Camera");
             break;
         }
     }
