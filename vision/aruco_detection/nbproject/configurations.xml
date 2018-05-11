@@ -20,6 +20,7 @@
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
       <itemPath>dist/Debug/GNU-Linux/poseDif.txt</itemPath>
       <itemPath>print_out.cpp</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/robotParams.txt</itemPath>
       <itemPath>dist/Debug/GNU-Linux/robotToMarkerTvec.txt</itemPath>
       <itemPath>rt_communication.cpp</itemPath>
       <itemPath>rt_data_handler.cpp</itemPath>
@@ -65,6 +66,11 @@
             flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/poseDif.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/robotParams.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/robotToMarkerTvec.txt"
             ex="false"
@@ -114,6 +120,11 @@
             flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/poseDif.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/robotParams.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/robotToMarkerTvec.txt"
             ex="false"

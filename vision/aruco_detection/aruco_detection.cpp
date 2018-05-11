@@ -98,30 +98,30 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 
     Affine3d poseActual = Affine3d(rvec, tvec);
     Affine3d distFromRef = poseActual * poseRef.inv();
-//    Vec3d ntvec = distFromRef.translation();
-    Vec3d ntvec = tvec-poseRef.translation();
+    //    Vec3d ntvec = distFromRef.translation();
+    Vec3d ntvec = tvec - poseRef.translation();
     //    Vec3d robotToMarker;
-    
+
     // change perspective, where markerToRobot = [z,x,-y]
     robotToMarkerTvec(0) = -ntvec(2) + x;
     robotToMarkerTvec(1) = ntvec(0) + y;
     robotToMarkerTvec(2) = -ntvec(1) + z;
-    
-//    robotToMarkerRvec(0) = rvec(0);
-//    robotToMarkerRvec(1) = rvec(1);
-//    robotToMarkerRvec(2) = rvec(2);
-    
-    
+
+    //    robotToMarkerRvec(0) = rvec(0);
+    //    robotToMarkerRvec(1) = rvec(1);
+    //    robotToMarkerRvec(2) = rvec(2);
+
+
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
     cout << robotToMarkerTvec << endl;
-    
+
     file << "tvec: " << endl;
     file << "[";
     file << tvec(0) << ", ";
     file << tvec(1) << ", ";
     file << tvec(2) << "]" << endl;
-    
+
     file << "refvec: " << endl;
     file << "[";
     file << poseRef.translation()(0) << ", ";
@@ -133,7 +133,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     file << ntvec(0) << ", ";
     file << ntvec(1) << ", ";
     file << ntvec(2) << "]" << endl;
-    
+
     file << "robotToMarkerTvec: " << endl;
     file << "[";
     file << robotToMarkerTvec(0) << ", ";
@@ -152,14 +152,14 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     cout << "distFromRef: " << endl << distFromRef.matrix << endl;
     cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
     cout << "++++++++++++++++++" << endl;
-    
+
     file << "______________________" << endl;
     file.close();
 }
 
 static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, vector< Affine3d >& poses2) {
     if (ids.size() > 0) {
-//        file.open("cmdout.txt", fstream::in | fstream::out | fstream::app);
+        //        file.open("cmdout.txt", fstream::in | fstream::out | fstream::app);
         for (int i = 0; i < ids.size(); i++) {
             // Define xyz rxryrz and some security checks
             double x = tvecs[i].val[0];
@@ -191,8 +191,8 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
 
 
 
-//            cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
-//            cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
+            //            cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
+            //            cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
 
             //            file << "----------------" << endl;
             //            file << "ID:" << ids[i] << endl;
@@ -311,29 +311,20 @@ int main(int argc, char *argv[]) {
     ofstream file;
 
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
-    // COMMUNICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
 
+    // COMMUNICATION TEST
 
+    RtDataHandler dataHandler;
     //        RtCommunication com("192.168.238.142");
-
-
-    //        RtDataHandler dataHandler;
     RtCommunication com("158.42.206.10");
     com.start();
-    //        usleep(5000000);
-    //    print_debug("WWWWW");
-    //    usleep(2000000);
-    //    com.addCommandToQueue("set_digital_out(4,True)");
-    //    usleep(2000000);
-    //    print_debug("MMMMM");
-    //    com.addCommandToQueue("set_digital_out(4,False)");
-    //    usleep(2000000);    
-
-
-
+    usleep(5000000);
+//    com.set_digital_out(4, true);
+//    usleep(2000000);
+//    com.set_digital_out(4, false);
 
 
 
@@ -387,7 +378,16 @@ int main(int argc, char *argv[]) {
     int remainId = -1;
 
     while (inputVideo.grab()) {
-        //        cout << "Version = " << dataHandler.getVersion() << endl;    
+        // Get Robot parameters
+        ofstream fileP;
+        fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
+        vector< double > TCP;
+        TCP = dataHandler.getToolVectorTarget();
+        double version = dataHandler.getVersion();
+        fileP << "Version = " << version << endl;
+        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
+        fileP.close();
+        
 
         Mat image, imageCopy;
         inputVideo.retrieve(image);
@@ -445,9 +445,9 @@ int main(int argc, char *argv[]) {
             // Actualize carrying
             cout << "idsCurrent = " << ids.size() << endl;
             cout << "remainId = " << remainId << endl;
-            
+
             for (unsigned int i = 0; i < ids.size(); i++) {
-                poses2[ids[i]] = Affine3d(rvecs[i],tvecs[i]);
+                poses2[ids[i]] = Affine3d(rvecs[i], tvecs[i]);
             }
         }
 
