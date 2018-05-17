@@ -52,7 +52,7 @@ static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeff
     return true;
 }
 
-static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, Vec3d& robotToMarkerTvec/*, Vec3d& robotToMarkerRvec*/) {
+static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
     ofstream file;
     file.open("robotToMarkerTvec.txt", fstream::in | fstream::out | fstream::app);
     file << "______________________" << endl;
@@ -107,14 +107,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     robotToMarkerTvec(1) = ntvec(0) + y;
     robotToMarkerTvec(2) = -ntvec(1) + z;
 
-    //    robotToMarkerRvec(0) = rvec(0);
-    //    robotToMarkerRvec(1) = rvec(1);
-    //    robotToMarkerRvec(2) = rvec(2);
+    robotToMarkerRvec(0) = rvec(1);
+    robotToMarkerRvec(1) = 0 /*rvec(0)*/;
+    robotToMarkerRvec(2) = 0 /*rvec(2)*/;
 
 
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
-    cout << robotToMarkerTvec << endl;
+    cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
+    cout << "RobotToMarkerRvec: " << endl << robotToMarkerRvec << endl;
 
     file << "tvec: " << endl;
     file << "[";
@@ -122,7 +123,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     file << tvec(1) << ", ";
     file << tvec(2) << "]" << endl;
 
-    file << "refvec: " << endl;
+    file << "reftvec: " << endl;
     file << "[";
     file << poseRef.translation()(0) << ", ";
     file << poseRef.translation()(1) << ", ";
@@ -139,6 +140,13 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     file << robotToMarkerTvec(0) << ", ";
     file << robotToMarkerTvec(1) << ", ";
     file << robotToMarkerTvec(2);
+    file << "]" << endl;
+    
+    file << "robotToMarkerRvec: " << endl;
+    file << "[";
+    file << robotToMarkerRvec(0) << ", ";
+    file << robotToMarkerRvec(1) << ", ";
+    file << robotToMarkerRvec(2);
     file << "]" << endl;
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
@@ -159,7 +167,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 
 static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, vector< Affine3d >& poses2) {
     if (ids.size() > 0) {
-        //        file.open("cmdout.txt", fstream::in | fstream::out | fstream::app);
+        file.open("cmdout2.txt", fstream::in | fstream::out | fstream::app);
         for (int i = 0; i < ids.size(); i++) {
             // Define xyz rxryrz and some security checks
             double x = tvecs[i].val[0];
@@ -168,7 +176,8 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
             double rx = rvecs[i].val[0];
             double ry = rvecs[i].val[1];
             double rz = rvecs[i].val[2];
-
+            Mat R;
+            Rodrigues(rvecs[i], R);
             // Change perspective respect camera
             //Security limit cap
             //            if(abs(x) > 0.5)
@@ -180,8 +189,12 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
             //            if(z < -0.10)
             //                z = -0.10;
 
-            //            cout << "ID real =" << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
-            //            cout << "ID secured =" << ids[i] << endl << " rvecs = [" << rx << ", " << ry << ", " << rz << "]" << endl << " tvecs = [" << x << ", " << y << ", " << z << "]" << endl << endl;
+            cout << "ID real =" << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
+            cout << "R real = " << R << endl;
+//            cout << "ID secured =" << ids[i] << endl << " rvecs = [" << rx << ", " << ry << ", " << rz << "]" << endl << " tvecs = [" << x << ", " << y << ", " << z << "]" << endl << endl;
+
+            if (y > -0.46)
+                file << "Y exceeded: " << endl << "[" << x << ", " << y << ", " << z << "]" << endl;
 
             Affine3d pose1 = Affine3d(rvecs[i], tvecs[i]);
 
@@ -223,29 +236,35 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
     // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
     for (int i = 0; i < ids.size(); i++) {
         if (ids[i] == 6 || ids[i] == 7) {
+            cout << "ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ" << endl;
             switch (ids[i]) {
                 case 6:
                     com.set_digital_out(4, true);
+                    cout << "66666666666666666666666666666" << endl;
+                    break;
                 case 7:
                     com.set_digital_out(4, false);
+                    break;
             }
         } else {
             if (ids[i] == remainId) {
                 // if detected, send offset movement and exit the function
                 detected = true;
-                Vec3d poseFinal;
+                Vec3d poseTFinal;
+                Vec3d poseRFinal;
                 Vec3d poseDif = tvecs[i] - poses2[ids[i]].translation();
                 ofstream file;
                 file.open("poseDif.txt", fstream::in | fstream::out | fstream::app);
                 file << "Posedif: " << endl << "[" << poseDif(0) << ", " << poseDif(2) << ", " << poseDif(2) << "]" << endl;
                 file.close();
-                double lim = 0.02;
+
                 // setting a limit to not overload the server by positions
+                double lim = 0.02;
                 if (abs(poseDif(0)) > lim || abs(poseDif(1)) > lim || abs(poseDif(2)) > lim) {
-                    setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseFinal);
-                    com.movejp(poseFinal(0), poseFinal(1), poseFinal(2));
+                    setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseTFinal, poseRFinal);
+                    com.movejp(poseTFinal(0), poseTFinal(1), poseTFinal(2), poseRFinal(0), poseRFinal(1), poseRFinal(2));
                 }
-                return;
+                //                return;                                                                                                                               CHANGES
             } else {
                 w = i;
                 nextpp = ids[i];
@@ -257,22 +276,22 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
         remainId = nextpp;
         switch (remainId) {
             case 0:
-                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 break;
             case 1:
-                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 break;
             case 2:
-                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 break;
             case 3:
-                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 0);
+                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 break;
             case 4:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, 0);
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 break;
             case 5:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, 0);
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
                 break;
             default:
                 return;
@@ -316,16 +335,14 @@ int main(int argc, char *argv[]) {
 
 
     // COMMUNICATION TEST
-
     RtDataHandler dataHandler;
-    //        RtCommunication com("192.168.238.142");
+//    RtCommunication com("192.168.238.142");
     RtCommunication com("158.42.206.10");
     com.start();
     usleep(5000000);
-//    com.set_digital_out(4, true);
-//    usleep(2000000);
-//    com.set_digital_out(4, false);
-
+    com.set_digital_out(4, true);
+    usleep(1000000);
+    com.set_digital_out(4, false);
 
 
 
@@ -379,15 +396,15 @@ int main(int argc, char *argv[]) {
 
     while (inputVideo.grab()) {
         // Get Robot parameters
-        ofstream fileP;
-        fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
-        vector< double > TCP;
-        TCP = dataHandler.getToolVectorTarget();
-        double version = dataHandler.getVersion();
-        fileP << "Version = " << version << endl;
-        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
-        fileP.close();
-        
+//        ofstream fileP;
+//        fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
+//        vector< double > TCP;
+//        TCP = dataHandler.getToolVectorTarget();
+//        double version = dataHandler.getVersion();
+//        fileP << "Version = " << version << endl;
+//        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
+//        fileP.close();
+
 
         Mat image, imageCopy;
         inputVideo.retrieve(image);
