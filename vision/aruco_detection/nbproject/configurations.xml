@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>communication.h</itemPath>
+      <itemPath>data_handler.h</itemPath>
       <itemPath>print_out.h</itemPath>
       <itemPath>rt_communication.h</itemPath>
       <itemPath>rt_data_handler.h</itemPath>
@@ -17,6 +19,8 @@
                    projectFiles="true">
       <itemPath>aruco_detection.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/cmdout.txt</itemPath>
+      <itemPath>communication.cpp</itemPath>
+      <itemPath>data_handler.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
       <itemPath>dist/Debug/GNU-Linux/poseDif.txt</itemPath>
       <itemPath>print_out.cpp</itemPath>
@@ -57,6 +61,14 @@
         </linkerTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>
@@ -111,6 +123,14 @@
         </asmTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>

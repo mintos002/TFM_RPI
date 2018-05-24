@@ -36,6 +36,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/aruco_detection.o \
+	${OBJECTDIR}/communication.o \
+	${OBJECTDIR}/data_handler.o \
 	${OBJECTDIR}/print_out.o \
 	${OBJECTDIR}/rt_communication.o \
 	${OBJECTDIR}/rt_data_handler.o
@@ -69,6 +71,16 @@ ${OBJECTDIR}/aruco_detection.o: aruco_detection.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aruco_detection.o aruco_detection.cpp
+
+${OBJECTDIR}/communication.o: communication.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/communication.o communication.cpp
+
+${OBJECTDIR}/data_handler.o: data_handler.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/data_handler.o data_handler.cpp
 
 ${OBJECTDIR}/print_out.o: print_out.cpp
 	${MKDIR} -p ${OBJECTDIR}
