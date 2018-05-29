@@ -52,6 +52,13 @@ static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeff
     return true;
 }
 
+static void rotation(Vec3d& rvec, Vec3d& tvec, Vec3d& rot, Vec3d& nrvec) {
+    Affine3d pose = Affine3d(rvec, tvec);
+    Affine3d rotation = Affine3d::Identity().rotate(rot);
+    pose = pose * rotation;
+    nrvec = pose.rvec();
+}
+
 static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
     ofstream file;
     file.open("robotToMarkerTvec.txt", fstream::in | fstream::out | fstream::app);
@@ -60,6 +67,21 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     double x;
     double y;
     double z;
+    
+    Affine3d rotation90X = Affine3d::Identity().rotate(Vec3d(CV_PI/2, 0, 0));
+    Affine3d rotation90Y = Affine3d::Identity().rotate(Vec3d(0, CV_PI/2, 0));
+    Affine3d rotation90Z = Affine3d::Identity().rotate(Vec3d(0, 0, CV_PI/2));
+    
+    Vec3d vr90X = Vec3d(CV_PI/2, 0, 0);
+    Vec3d vr90Y = Vec3d(0, CV_PI/2, 0);
+    Vec3d vr90Z = Vec3d(0, 0, CV_PI / 2);
+
+    Vec3d vr90mX = Vec3d(-CV_PI / 2, 0, 0);
+    Vec3d vr90mY = Vec3d(0, -CV_PI / 2, 0);
+    Vec3d vr90mZ = Vec3d(0, 0, -CV_PI / 2);
+
+    Vec3d nrvec;
+    
     // x, y, z reference values in real robot for the different positions
     switch (id) {
         case 0:
@@ -72,9 +94,19 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
             y = -0.11684;
             z = 0.48060;
             
-            robotToMarkerRvec(0) = rvec(2)/*-rvec(1)*/;
-            robotToMarkerRvec(1) = rvec(0)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-            robotToMarkerRvec(2) = rvec(1) /*rvec(2)*/;
+            rotation(rvec, tvec, vr90Y, nrvec);
+            rotation(nrvec, tvec, vr90mZ, nrvec);
+            rotation(nrvec, tvec, vr90mZ, nrvec);
+            
+            cout << "nrvec: " << endl << nrvec << endl;
+            
+            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+            
+//            robotToMarkerRvec(0) = rvec(2)/*-rvec(1)*/;
+//            robotToMarkerRvec(1) = rvec(0)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+//            robotToMarkerRvec(2) = rvec(1) /*rvec(2)*/;
             break;
         case 1:
             //TCP_3
@@ -86,6 +118,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
             x = -0.11684;
             y = -0.42680;
             z = 0.48060;
+            
+            rotation(rvec, tvec, vr90mZ, nrvec);
+            rotation(nrvec, tvec, vr90mY, nrvec);
+            
+            cout << "nrvec: " << endl << nrvec << endl;
+            
+            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
             break;
         case 2:
             //TCP_3
@@ -97,8 +138,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
             x = -0.42680;
             y = -0.11684;
             z = 0.48060;
+            nrvec = rvec;
+            rotation(nrvec, tvec, vr90mY, nrvec);
+//            rotation(nrvec, tvec, vr90mY, nrvec);
             
-
+            cout << "nrvec: " << endl << nrvec << endl;
+            
+            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
             break;
         case 3:
             //TCP_3
@@ -110,6 +158,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
             x = 0.11684;
             y = 0.42680;
             z = 0.48060;
+            nrvec = rvec;
+            rotation(nrvec, tvec, vr90Z, nrvec);
+            rotation(nrvec, tvec, vr90mY, nrvec);
+            
+            cout << "nrvec: " << endl << nrvec << endl;
+            
+            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
             break;
         case 4:
             //TCP_3
@@ -148,11 +205,11 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     robotToMarkerTvec(1) = ntvec(0) + y;
     robotToMarkerTvec(2) = -ntvec(1) + z;
 
-    Mat R;
-    Rodrigues(rvec, R);
-    double theta = sqrt(pow(rvec(0),2)+pow(rvec(1),2)+pow(rvec(2),2));
-    Vec3d v=rvec/theta;
-    cout << "axis-angle = [" << theta << ", " << v(0) << ", " << v(1) << ", " << v(2) << "]" << endl;
+//    Mat R;
+//    Rodrigues(rvec, R);
+//    double theta = sqrt(pow(rvec(0),2)+pow(rvec(1),2)+pow(rvec(2),2));
+//    Vec3d v=rvec/theta;
+//    cout << "axis-angle = [" << theta << ", " << v(0) << ", " << v(1) << ", " << v(2) << "]" << endl;
 
 
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
@@ -273,7 +330,7 @@ static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d
     }
 }
 
-static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2) { // Marcador antiguo marcador nuevo
+static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
     // check if there are any marker detected
     if (ids.size() < 1) return;
     // initatie detection tag and posible next position
@@ -298,17 +355,22 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 Vec3d poseTFinal;
                 Vec3d poseRFinal;
                 Vec3d poseDif = tvecs[i] - poses2[ids[i]].translation();
+                
                 ofstream file;
                 file.open("poseDif.txt", fstream::in | fstream::out | fstream::app);
                 file << "Posedif: " << endl << "[" << poseDif(0) << ", " << poseDif(2) << ", " << poseDif(2) << "]" << endl;
                 file.close();
 
                 // setting a limit to not overload the server by positions
-                double lim = 0.02;
-                if (/*abs(poseDif(0)) > lim || abs(poseDif(1)) > lim || abs(poseDif(2)) > lim*/ true) {
-                    setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseTFinal, poseRFinal);
+                double limT = 0.02;
+                double limR = 0.01;
+                setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseTFinal, poseRFinal);
+                Vec3d rotDif = poseRFinal - lastSPOVrvec;
+                if (abs(poseDif(0)) > limT || abs(poseDif(1)) > limT || abs(poseDif(2)) > limT ||
+                        abs(rotDif(0)) > limR || abs(rotDif(1)) > limR || abs(rotDif(2)) > limR) {
                     com.movejp(poseTFinal(0), poseTFinal(1), poseTFinal(2), poseRFinal(0), poseRFinal(1), poseRFinal(2));
                 }
+                lastSPOVrvec = poseRFinal;
                 //                return;                                                                                                                               CHANGES
             } else {
                 w = i;
@@ -329,7 +391,7 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 actualPlane = 1;
                 break;
             case 2:
-                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, 3 * (M_PI / 2));
+                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 actualPlane = 2;
                 break;
             case 3:
@@ -442,6 +504,7 @@ int main(int argc, char *argv[]) {
     int totalIterations = 0;
 
     vector< Affine3d > poses2(8);
+    Vec3d lastSPOVrvec;
     Affine3d poseRef;
     int remainId = -1;
     int actualPlane = -1;
@@ -505,7 +568,8 @@ int main(int argc, char *argv[]) {
             cout << "----------------" << endl;
             // get the distance btw markers
             distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
-            markerProcesor(com, ids, rvecs, tvecs, remainId, actualPlane, poseRef, poses2);
+            markerProcesor(com, ids, rvecs, tvecs, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
+            
 
 
             for (unsigned int i = 0; i < ids.size(); i++) {
