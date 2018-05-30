@@ -90,23 +90,29 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 //            y = -0.11571;
 //            z = 0.48144;
             //TCP_2
-            x = 0.42680;
-            y = -0.11684;
-            z = 0.48060;
+//            x = 0.42680;
+//            y = -0.11684;
+//            z = 0.48060;
+//            rotation(rvec, tvec, vr90mY, nrvec);
+//            rotation(nrvec, tvec, vr90mZ, nrvec);
+//            rotation(nrvec, tvec, vr90mZ, nrvec);
+//            nrvec = rvec;
             
-            rotation(rvec, tvec, vr90Y, nrvec);
-            rotation(nrvec, tvec, vr90mZ, nrvec);
-            rotation(nrvec, tvec, vr90mZ, nrvec);
+//            robotToMarkerRvec(0) = nrvec(0);
+//            robotToMarkerRvec(1) = nrvec(1);
+//            robotToMarkerRvec(2) = nrvec(2);
+            
+            //TCP_2_down
+            x = 0.29680;
+            y = -0.11554;
+            z = 0.18190;
+            nrvec=rvec;
+
+            robotToMarkerRvec(0) = -nrvec(2);
+            robotToMarkerRvec(1) = nrvec(0);
+            robotToMarkerRvec(2) = -nrvec(1);
             
             cout << "nrvec: " << endl << nrvec << endl;
-            
-            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
-            
-//            robotToMarkerRvec(0) = rvec(2)/*-rvec(1)*/;
-//            robotToMarkerRvec(1) = rvec(0)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-//            robotToMarkerRvec(2) = rvec(1) /*rvec(2)*/;
             break;
         case 1:
             //TCP_3
@@ -115,18 +121,30 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 //            z = 0.48144;
             
             //TCP_2
-            x = -0.11684;
-            y = -0.42680;
-            z = 0.48060;
+//            x = -0.11684;
+//            y = -0.42680;
+//            z = 0.48060;
+//            rotation(rvec, tvec, vr90mZ, nrvec);
+//            rotation(nrvec, tvec, vr90mY, nrvec);
+//            
+//            cout << "nrvec: " << endl << nrvec << endl;
+//            
+//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
             
-            rotation(rvec, tvec, vr90mZ, nrvec);
+            //TCP_2_down
+            x = -0.11554;
+            y = -0.29680;
+            z = 0.18190;
+            nrvec=rvec;
             rotation(nrvec, tvec, vr90mY, nrvec);
             
             cout << "nrvec: " << endl << nrvec << endl;
             
-            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+            robotToMarkerRvec(0) = -nrvec(2);
+            robotToMarkerRvec(1) = nrvec(0);
+            robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 2:
             //TCP_3
@@ -135,18 +153,33 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 //            z = 0.48144;
             
             //TCP_2
-            x = -0.42680;
-            y = -0.11684;
-            z = 0.48060;
+//            x = -0.42680;
+//            y = 0.11684;
+//            z = 0.48060;
             nrvec = rvec;
-            rotation(nrvec, tvec, vr90mY, nrvec);
 //            rotation(nrvec, tvec, vr90mY, nrvec);
+////            rotation(nrvec, tvec, vr90mY, nrvec);
+//            
+//            cout << "nrvec: " << endl << nrvec << endl;
+//            
+//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
             
+            //TCP_2_down
+            x = -0.29680;
+            y = 0.11554;
+            z = 0.18190;
+            
+            nrvec = rvec;
+            rotation(nrvec, tvec, vr90Y, nrvec);
+            rotation(nrvec, tvec, vr90Y, nrvec);
+
             cout << "nrvec: " << endl << nrvec << endl;
             
-            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+            robotToMarkerRvec(0) = -nrvec(2);
+            robotToMarkerRvec(1) = nrvec(0);
+            robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 3:
             //TCP_3
@@ -155,18 +188,32 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 //            z = 0.48144;
             
             //TCP_2
-            x = 0.11684;
-            y = 0.42680;
-            z = 0.48060;
+//            x = 0.11684;
+//            y = 0.42680;
+//            z = 0.48060;
+//            nrvec = rvec;
+//            rotation(nrvec, tvec, vr90Z, nrvec);
+//            rotation(nrvec, tvec, vr90mY, nrvec);
+//            
+//            cout << "nrvec: " << endl << nrvec << endl;
+//            
+//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+            
+            //TCP_2_down
+            x = 0.11554;
+            y = 0.29680;
+            z = 0.18190;
+            
             nrvec = rvec;
-            rotation(nrvec, tvec, vr90Z, nrvec);
-            rotation(nrvec, tvec, vr90mY, nrvec);
+            rotation(nrvec, tvec, vr90Y, nrvec);
             
             cout << "nrvec: " << endl << nrvec << endl;
             
-            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+            robotToMarkerRvec(0) = -nrvec(2);
+            robotToMarkerRvec(1) = nrvec(0);
+            robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 4:
             //TCP_3
@@ -175,9 +222,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 //            z = 0.21986;
             
             //TCP_2
-            x = 0.29689;
-            y = -0.11553;
-            z = 0.18189;
+//            x = 0.29689;
+//            y = -0.11553;
+//            z = 0.18189;
+            
+            //TCP_2_down
+            x = 0.29680;
+            y = -0.11405;
+            z = 0.61058;
+            
             break;
         case 5:
             //TCP_3
@@ -189,6 +242,12 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
             x = 0.29689;
             y = -0.11401;
             z = 0.61057;
+            
+            //TCP_2_down
+            x = 0.42680;
+            y = -0.11684;
+            z = 0.48060;
+            
             break;
         default:
             break;
@@ -204,14 +263,8 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     robotToMarkerTvec(0) = -ntvec(2) + x;
     robotToMarkerTvec(1) = ntvec(0) + y;
     robotToMarkerTvec(2) = -ntvec(1) + z;
-
-//    Mat R;
-//    Rodrigues(rvec, R);
-//    double theta = sqrt(pow(rvec(0),2)+pow(rvec(1),2)+pow(rvec(2),2));
-//    Vec3d v=rvec/theta;
-//    cout << "axis-angle = [" << theta << ", " << v(0) << ", " << v(1) << ", " << v(2) << "]" << endl;
-
-
+    
+    //Plots
     cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
     cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
     cout << "RobotToMarkerRvec: " << endl << robotToMarkerRvec << endl;
@@ -363,7 +416,7 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
 
                 // setting a limit to not overload the server by positions
                 double limT = 0.02;
-                double limR = 0.01;
+                double limR = 0.02;
                 setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseTFinal, poseRFinal);
                 Vec3d rotDif = poseRFinal - lastSPOVrvec;
                 if (abs(poseDif(0)) > limT || abs(poseDif(1)) > limT || abs(poseDif(2)) > limT ||
@@ -383,27 +436,36 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
         remainId = nextpp;
         switch (remainId) {
             case 0:
-                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+//                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
+                
                 actualPlane = 0;
                 break;
             case 1:
-                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+//                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 1;
                 break;
             case 2:
-                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+//                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 2;
                 break;
             case 3:
-                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+//                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 3;
                 break;
             case 4:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
+//                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
+                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+
                 actualPlane = 4;
                 break;
             case 5:
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+//                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+
                 actualPlane = 5;
                 break;
             default:
