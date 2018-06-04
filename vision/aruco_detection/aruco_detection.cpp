@@ -265,7 +265,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     robotToMarkerTvec(2) = -ntvec(1) + z;
     
     //Plots
-    cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
+    cout << "_________________________" << endl;
     cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
     cout << "RobotToMarkerRvec: " << endl << robotToMarkerRvec << endl;
 
@@ -306,19 +306,15 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     file << robotToMarkerRvec(1) << ", ";
     file << robotToMarkerRvec(2);
     file << "]" << endl;
-    cout << "OOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << endl;
 
-
-    cout << "++++++++++++++++++" << endl;
     cout << "rvec: " << endl << rvec << endl;
     cout << "tvec: " << endl << tvec << endl;
 //    cout << "poseActual: " << endl << poseActual.matrix << endl;
 //    cout << "poseRef: " << endl << poseRef.matrix << endl;
 //    cout << "distFromRef: " << endl << distFromRef.matrix << endl;
 //    cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
-    cout << "++++++++++++++++++" << endl;
-
-    file << "______________________" << endl;
+    cout << "_________________________" << endl;
+    file << "_________________________" << endl;
     file.close();
 }
 
@@ -629,7 +625,7 @@ int main(int argc, char *argv[]) {
 
             cout << "----------------" << endl;
             // get the distance btw markers
-            distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
+//            distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
             markerProcesor(com, ids, rvecs, tvecs, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
             
 
