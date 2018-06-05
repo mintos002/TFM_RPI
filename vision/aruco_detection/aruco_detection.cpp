@@ -59,7 +59,7 @@ static void rotation(Vec3d& rvec, Vec3d& tvec, Vec3d& rot, Vec3d& nrvec) {
     nrvec = pose.rvec();
 }
 
-static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
+static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, int actualPlane, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
     ofstream file;
     file.open("robotToMarkerTvec.txt", fstream::in | fstream::out | fstream::app);
     file << "______________________" << endl;
@@ -67,13 +67,13 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     double x;
     double y;
     double z;
-    
-    Affine3d rotation90X = Affine3d::Identity().rotate(Vec3d(CV_PI/2, 0, 0));
-    Affine3d rotation90Y = Affine3d::Identity().rotate(Vec3d(0, CV_PI/2, 0));
-    Affine3d rotation90Z = Affine3d::Identity().rotate(Vec3d(0, 0, CV_PI/2));
-    
-    Vec3d vr90X = Vec3d(CV_PI/2, 0, 0);
-    Vec3d vr90Y = Vec3d(0, CV_PI/2, 0);
+
+    Affine3d rotation90X = Affine3d::Identity().rotate(Vec3d(CV_PI / 2, 0, 0));
+    Affine3d rotation90Y = Affine3d::Identity().rotate(Vec3d(0, CV_PI / 2, 0));
+    Affine3d rotation90Z = Affine3d::Identity().rotate(Vec3d(0, 0, CV_PI / 2));
+
+    Vec3d vr90X = Vec3d(CV_PI / 2, 0, 0);
+    Vec3d vr90Y = Vec3d(0, CV_PI / 2, 0);
     Vec3d vr90Z = Vec3d(0, 0, CV_PI / 2);
 
     Vec3d vr90mX = Vec3d(-CV_PI / 2, 0, 0);
@@ -81,173 +81,328 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     Vec3d vr90mZ = Vec3d(0, 0, -CV_PI / 2);
 
     Vec3d nrvec;
-    
+
     // x, y, z reference values in real robot for the different positions
     switch (id) {
         case 0:
             //TCP_3
-//            x = 0.38883;
-//            y = -0.11571;
-//            z = 0.48144;
-            //TCP_2
-//            x = 0.42680;
-//            y = -0.11684;
-//            z = 0.48060;
-//            rotation(rvec, tvec, vr90mY, nrvec);
-//            rotation(nrvec, tvec, vr90mZ, nrvec);
-//            rotation(nrvec, tvec, vr90mZ, nrvec);
-//            nrvec = rvec;
-            
-//            robotToMarkerRvec(0) = nrvec(0);
-//            robotToMarkerRvec(1) = nrvec(1);
-//            robotToMarkerRvec(2) = nrvec(2);
-            
+            //            x = 0.38883;
+            //            y = -0.11571;
+            //            z = 0.48144;
+            //TCP_2_up
+            //            x = 0.29681;
+            //            y = -0.11403;
+            //            z = 0.61060;
+
+            //TCP_2_mid
+            //            x = 0.42680;
+            //            y = -0.11684;
+            //            z = 0.48060;
+            //            rotation(rvec, tvec, vr90mY, nrvec);
+            //            rotation(nrvec, tvec, vr90mZ, nrvec);
+            //            rotation(nrvec, tvec, vr90mZ, nrvec);
+            //            nrvec = rvec;
+
+            //            robotToMarkerRvec(0) = nrvec(0);
+            //            robotToMarkerRvec(1) = nrvec(1);
+            //            robotToMarkerRvec(2) = nrvec(2);
+
             //TCP_2_down
             x = 0.29680;
             y = -0.11554;
             z = 0.18190;
-            nrvec=rvec;
+            nrvec = rvec;
 
             robotToMarkerRvec(0) = -nrvec(2);
             robotToMarkerRvec(1) = nrvec(0);
             robotToMarkerRvec(2) = -nrvec(1);
-            
+
             cout << "nrvec: " << endl << nrvec << endl;
             break;
         case 1:
             //TCP_3
-//            x = -0.11571;
-//            y = -0.38883;
-//            z = 0.48144;
-            
-            //TCP_2
-//            x = -0.11684;
-//            y = -0.42680;
-//            z = 0.48060;
-//            rotation(rvec, tvec, vr90mZ, nrvec);
-//            rotation(nrvec, tvec, vr90mY, nrvec);
-//            
-//            cout << "nrvec: " << endl << nrvec << endl;
-//            
-//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
-            
+            //            x = -0.11571;
+            //            y = -0.38883;
+            //            z = 0.48144;
+            //TCP_2_up
+            //            x = -0.11403;
+            //            y = -0.29681;
+            //            z = 0.61060;
+
+            //TCP_2_mid
+            //            x = -0.11684;
+            //            y = -0.42680;
+            //            z = 0.48060;
+            //            rotation(rvec, tvec, vr90mZ, nrvec);
+            //            rotation(nrvec, tvec, vr90mY, nrvec);
+            //            
+            //            cout << "nrvec: " << endl << nrvec << endl;
+            //            
+            //            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            //            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            //            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+
             //TCP_2_down
             x = -0.11554;
             y = -0.29680;
             z = 0.18190;
-            nrvec=rvec;
+            nrvec = rvec;
             rotation(nrvec, tvec, vr90mY, nrvec);
-            
+
             cout << "nrvec: " << endl << nrvec << endl;
-            
+
             robotToMarkerRvec(0) = -nrvec(2);
             robotToMarkerRvec(1) = nrvec(0);
             robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 2:
             //TCP_3
-//            x = -0.38883;
-//            y = 0.11571;
-//            z = 0.48144;
-            
-            //TCP_2
-//            x = -0.42680;
-//            y = 0.11684;
-//            z = 0.48060;
-            nrvec = rvec;
-//            rotation(nrvec, tvec, vr90mY, nrvec);
-////            rotation(nrvec, tvec, vr90mY, nrvec);
-//            
-//            cout << "nrvec: " << endl << nrvec << endl;
-//            
-//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
-            
+            //            x = -0.38883;
+            //            y = 0.11571;
+            //            z = 0.48144;
+
+            //TCP_2_up
+            //            x = -0.29681;
+            //            y = 0.11403;
+            //            z = 0.61060;
+
+            //TCP_2_mid
+            //            x = -0.42680;
+            //            y = 0.11684;
+            //            z = 0.48060;
+            //            nrvec = rvec;
+            //            rotation(nrvec, tvec, vr90mY, nrvec);
+            ////            rotation(nrvec, tvec, vr90mY, nrvec);
+            //            
+            //            cout << "nrvec: " << endl << nrvec << endl;
+            //            
+            //            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            //            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            //            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+
             //TCP_2_down
             x = -0.29680;
             y = 0.11554;
             z = 0.18190;
-            
+
             nrvec = rvec;
             rotation(nrvec, tvec, vr90Y, nrvec);
             rotation(nrvec, tvec, vr90Y, nrvec);
 
             cout << "nrvec: " << endl << nrvec << endl;
-            
+
             robotToMarkerRvec(0) = -nrvec(2);
             robotToMarkerRvec(1) = nrvec(0);
             robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 3:
             //TCP_3
-//            x = 0.11571;
-//            y = 0.38883;
-//            z = 0.48144;
-            
-            //TCP_2
-//            x = 0.11684;
-//            y = 0.42680;
-//            z = 0.48060;
-//            nrvec = rvec;
-//            rotation(nrvec, tvec, vr90Z, nrvec);
-//            rotation(nrvec, tvec, vr90mY, nrvec);
-//            
-//            cout << "nrvec: " << endl << nrvec << endl;
-//            
-//            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
-//            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
-//            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
-            
+            //            x = 0.11571;
+            //            y = 0.38883;
+            //            z = 0.48144;
+
+            //TCP_2_up
+            //            x = 0.11403;
+            //            y = 0.29681;
+            //            z = 0.61060;
+
+            //TCP_2_mid
+            //            x = 0.11684;
+            //            y = 0.42680;
+            //            z = 0.48060;
+            //            nrvec = rvec;
+            //            rotation(nrvec, tvec, vr90Z, nrvec);
+            //            rotation(nrvec, tvec, vr90mY, nrvec);
+            //            
+            //            cout << "nrvec: " << endl << nrvec << endl;
+            //            
+            //            robotToMarkerRvec(0) = nrvec(0)/*-rvec(1)*/;
+            //            robotToMarkerRvec(1) = nrvec(1)/*fmod(rvec(0) - M_PI / 2, 2 * M_PI)*/;
+            //            robotToMarkerRvec(2) = nrvec(2) /*rvec(2)*/;
+
             //TCP_2_down
             x = 0.11554;
             y = 0.29680;
             z = 0.18190;
-            
+
             nrvec = rvec;
             rotation(nrvec, tvec, vr90Y, nrvec);
-            
+
             cout << "nrvec: " << endl << nrvec << endl;
-            
+
             robotToMarkerRvec(0) = -nrvec(2);
             robotToMarkerRvec(1) = nrvec(0);
             robotToMarkerRvec(2) = -nrvec(1);
             break;
         case 4:
             //TCP_3
-//            x = 0.29764;
-//            y = -0.11476;
-//            z = 0.21986;
-            
-            //TCP_2
-//            x = 0.29689;
-//            y = -0.11553;
-//            z = 0.18189;
-            
+            //            x = 0.29764;
+            //            y = -0.11476;
+            //            z = 0.21986;
+
             //TCP_2_down
-            x = 0.29680;
-            y = -0.11405;
-            z = 0.61058;
-            
+            //            x = 0.29689;
+            //            y = -0.11553;
+            //            z = 0.18189;
+
+            //TCP_2_up
+            //            x = 0.29680;
+            //            y = -0.11405;
+            //            z = 0.61058;
+
+            switch (actualPlane) {
+                case 40:
+                    x = 0.29681;
+                    y = -0.11403;
+                    z = 0.61060;
+
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 41:
+                    x = -0.11403;
+                    y = -0.29681;
+                    z = 0.61060;
+                    
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 42:
+                    x = -0.29681;
+                    y = 0.11403;
+                    z = 0.61060;
+                    
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 43:
+                    x = 0.11403;
+                    y = 0.29681;
+                    z = 0.61060;
+                    
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90Y, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+                    rotation(nrvec, tvec, vr90mZ, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                default:
+
+                    break;
+            }
+
             break;
         case 5:
             //TCP_3
-//            x = 0.29764;
-//            y = -0.11476;
-//            z = 0.57258;
-            
-            //TCP_2
-            x = 0.29689;
-            y = -0.11401;
-            z = 0.61057;
-            
+            //            x = 0.29764;
+            //            y = -0.11476;
+            //            z = 0.57258;
+
+            //TCP_2_up
+            //            x = 0.29689;
+            //            y = -0.11401;
+            //            z = 0.61057;
+
             //TCP_2_down
-            x = 0.42680;
-            y = -0.11684;
-            z = 0.48060;
-            
+            //            x = 0.42680;
+            //            y = -0.11684;
+            //            z = 0.48060;
+
+            switch (actualPlane) {
+                case 50:
+                    x = 0.42680;
+                    y = -0.11684;
+                    z = 0.48060;
+
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mX, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 51:
+                    x = -0.11684;
+                    y = -0.42680;
+                    z = 0.48060;
+
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mX, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 52:
+                    x = -0.42680;
+                    y = 0.11684;
+                    z = 0.48060;
+
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mY, nrvec);
+                    rotation(nrvec, tvec, vr90mX, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                case 53:
+                    x = 0.11684;
+                    y = 0.42680;
+                    z = 0.48060;
+                    
+                    nrvec = rvec;
+                    rotation(nrvec, tvec, vr90Y, nrvec);
+                    rotation(nrvec, tvec, vr90mX, nrvec);
+
+                    cout << "nrvec: " << endl << nrvec << endl;
+
+                    robotToMarkerRvec(0) = -nrvec(2);
+                    robotToMarkerRvec(1) = nrvec(0);
+                    robotToMarkerRvec(2) = -nrvec(1);
+                    break;
+                default:
+
+                    break;
+            }
+
             break;
         default:
             break;
@@ -263,7 +418,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
     robotToMarkerTvec(0) = -ntvec(2) + x;
     robotToMarkerTvec(1) = ntvec(0) + y;
     robotToMarkerTvec(2) = -ntvec(1) + z;
-    
+
     //Plots
     cout << "_________________________" << endl;
     cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
@@ -309,74 +464,13 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, V
 
     cout << "rvec: " << endl << rvec << endl;
     cout << "tvec: " << endl << tvec << endl;
-//    cout << "poseActual: " << endl << poseActual.matrix << endl;
-//    cout << "poseRef: " << endl << poseRef.matrix << endl;
-//    cout << "distFromRef: " << endl << distFromRef.matrix << endl;
-//    cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
+    //    cout << "poseActual: " << endl << poseActual.matrix << endl;
+    //    cout << "poseRef: " << endl << poseRef.matrix << endl;
+    //    cout << "distFromRef: " << endl << distFromRef.matrix << endl;
+    //    cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
     cout << "_________________________" << endl;
     file << "_________________________" << endl;
     file.close();
-}
-
-static void distanceBtwMarkers(ofstream& file, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, vector< Affine3d >& poses2) {
-    if (ids.size() > 0) {
-        file.open("cmdout2.txt", fstream::in | fstream::out | fstream::app);
-        for (int i = 0; i < ids.size(); i++) {
-            // Define xyz rxryrz and some security checks
-            double x = tvecs[i].val[0];
-            double y = tvecs[i].val[1];
-            double z = tvecs[i].val[2];
-            double rx = rvecs[i].val[0];
-            double ry = rvecs[i].val[1];
-            double rz = rvecs[i].val[2];
-            Mat R;
-            Rodrigues(rvecs[i], R);
-            // Change perspective respect camera
-            //Security limit cap
-            //            if(abs(x) > 0.5)
-            //                x = 0.5;
-            //            if(abs(y) > 0.5)
-            //                y = 0.5;
-            //            if(z > 0.5)
-            //                z = 0.5;
-            //            if(z < -0.10)
-            //                z = -0.10;
-
-            cout << "ID real =" << ids[i] << endl << " rvecs = " << rvecs[i] << endl << " tvecs = " << tvecs[i] << endl << endl;
-//            cout << "R real = " << R << endl;
-            //            cout << "ID secured =" << ids[i] << endl << " rvecs = [" << rx << ", " << ry << ", " << rz << "]" << endl << " tvecs = [" << x << ", " << y << ", " << z << "]" << endl << endl;
-
-//            if (y > -0.46)
-//                file << "Y exceeded: " << endl << "[" << x << ", " << y << ", " << z << "]" << endl;
-
-            Affine3d pose1 = Affine3d(rvecs[i], tvecs[i]);
-
-            Affine3d distBtnMarkers = pose1 * poses2[ids[i]].inv();
-            //            cout << "Distance between markers: Rmat" << endl << " " << distBtnMarkers.translation() << endl << endl;
-            //            cout << "Distance between markers: tvec" << endl << " " << distBtnMarkers.rotation() << endl << endl;
-
-
-
-            //            cout << "Affine3d Pose 1 = " << endl << " " << pose1.matrix << endl << endl;
-            //            cout << "Affine3d Pose 2 = " << endl << " " << poses2[ids[i]].matrix << endl << endl;
-
-            //            file << "----------------" << endl;
-            //            file << "ID:" << ids[i] << endl;
-            //            file << "Reference Base:" << endl;
-            //            char ak[100];
-            ////            sprintf(ak, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", tvecs[0].val[0], tvecs[0].val[1], tvecs[0].val[2], fmod(rvecs[0].val[0] + M_PI, M_PI), rvecs[0].val[1], rvecs[0].val[2]);
-            //            sprintf(ak, "movej(p[%f, %f, %f, 2.399, -2.422, 2.424], a=1.0, v=1.0)\n", x, y, z);
-            //            file << ak;
-
-            //            file << "Distance btw markers:" << endl;
-            //            char ka[100];
-            //            sprintf(ka, "movej(p[%f, %f, %f, %f, %f, %f], a=1.0, v=1.0)\n", distBtnMarkers.translation()[0], distBtnMarkers.translation()[1], distBtnMarkers.translation()[2], distBtnMarkers.rvec()[0], distBtnMarkers.rvec()[1], distBtnMarkers.rvec()[2]);
-            //            file << ka;
-            file << "----------------" << endl;
-
-            file.close();
-        }
-    }
 }
 
 static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
@@ -398,13 +492,13 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                     break;
             }
         } else {
-            if (ids[i] == remainId && ids[i] == actualPlane) {
+            if (ids[i] == remainId && (ids[i] == actualPlane || ids[i] == (int) actualPlane / 10)) {
                 // if detected, send offset movement and exit the function
                 detected = true;
                 Vec3d poseTFinal;
                 Vec3d poseRFinal;
                 Vec3d poseDif = tvecs[i] - poses2[ids[i]].translation();
-                
+
                 ofstream file;
                 file.open("poseDif.txt", fstream::in | fstream::out | fstream::app);
                 file << "Posedif: " << endl << "[" << poseDif(0) << ", " << poseDif(2) << ", " << poseDif(2) << "]" << endl;
@@ -413,7 +507,7 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 // setting a limit to not overload the server by positions
                 double limT = 0.02;
                 double limR = 0.02;
-                setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, poseTFinal, poseRFinal);
+                setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, actualPlane, poseTFinal, poseRFinal);
                 Vec3d rotDif = poseRFinal - lastSPOVrvec;
                 if (abs(poseDif(0)) > limT || abs(poseDif(1)) > limT || abs(poseDif(2)) > limT ||
                         abs(rotDif(0)) > limR || abs(rotDif(1)) > limR || abs(rotDif(2)) > limR) {
@@ -432,38 +526,87 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
         remainId = nextpp;
         switch (remainId) {
             case 0:
-//                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                //                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                
                 actualPlane = 0;
                 break;
+
             case 1:
-//                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                //                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 1;
                 break;
+
             case 2:
-//                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                //                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 2;
                 break;
+
             case 3:
-//                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                //                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 actualPlane = 3;
                 break;
+
             case 4:
-//                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
+                //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                // ActualPlane depends ond last actualPlane
+                switch (actualPlane) {
+                    case 0:
+                        com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                        actualPlane = 40;
+                        break;
+                    case 1:
+                        com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                        actualPlane = 41;
+                        break;
+                    case 2:
+                        com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                        actualPlane = 42;
+                        break;
+                    case 3:
+                        com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                        actualPlane = 43;
+                        break;
+                    default:
+                        com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                        actualPlane = 40;
+                        break;
 
-                actualPlane = 4;
+                }
+                //                actualPlane = 4;
                 break;
+
             case 5:
-//                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-
-                actualPlane = 5;
+                //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
+                //                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                //                actualPlane = 5;
+                switch (actualPlane) {
+                    case 0:
+                        com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                        actualPlane = 50;
+                        break;
+                    case 1:
+                        com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                        actualPlane = 51;
+                        break;
+                    case 2:
+                        com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                        actualPlane = 52;
+                        break;
+                    case 3:
+                        com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                        actualPlane = 53;
+                        break;
+                    default:
+                        com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
+                        actualPlane = 50;
+                        break;
+                }
                 break;
+
             default:
                 return;
         }
@@ -474,7 +617,7 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
         // save reference position
         poseRef = Affine3d(rvecs[w], tvecs[w]);
         // wait for the robot to go to refPoint
-        usleep(5000000);
+        usleep(5500000);
     }
 }
 
@@ -505,8 +648,8 @@ int main(int argc, char *argv[]) {
 
 
     // COMMUNICATION TEST
-//    RtDataHandler dataHandler;
-//    //    RtCommunication com("192.168.238.142");
+    //    RtDataHandler dataHandler;
+    //    //    RtCommunication com("192.168.238.142");
     RtCommunication com("158.42.206.10");
     com.start();
     usleep(5000000);
@@ -572,12 +715,12 @@ int main(int argc, char *argv[]) {
         ofstream fileP;
         fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
         vector< double > TCP;
-//        TCP = dataHandler.getToolVectorTarget();
-//        double version = dataHandler.getVersion();
-//        double time = dataHandler.getTime();
-//        fileP << "Version = " << version << endl;
-//        fileP << "Time = " << time << endl;
-//        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
+        //        TCP = dataHandler.getToolVectorTarget();
+        //        double version = dataHandler.getVersion();
+        //        double time = dataHandler.getTime();
+        //        fileP << "Version = " << version << endl;
+        //        fileP << "Time = " << time << endl;
+        //        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
         fileP.close();
 
         Mat image, imageCopy;
@@ -624,10 +767,9 @@ int main(int argc, char *argv[]) {
             cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl << "CORNERS: " << endl << corners[0] << endl << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
 
             cout << "----------------" << endl;
-            // get the distance btw markers
-//            distanceBtwMarkers(file, ids, rvecs, tvecs, poses2);
+            // Process the distance btw markers and reference point
             markerProcesor(com, ids, rvecs, tvecs, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
-            
+
 
 
             for (unsigned int i = 0; i < ids.size(); i++) {
@@ -663,5 +805,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-
