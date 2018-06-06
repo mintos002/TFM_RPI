@@ -524,55 +524,61 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
     // if remainId is not in ids, go to nextpp reference position
     if (!detected) {
         remainId = nextpp;
+        // To be able to switch betwen planes without issues, ap needs to be substracted by 40 or 50
+        int ap = actualPlane;
+        if(ap < 45 && ap > 39) ap = actualPlane - 40;
+        if(ap < 55 && ap > 49) ap = actualPlane - 50;
+        
         switch (remainId) {
             case 0:
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                actualPlane = 0;
+                // Check if it was send correctly before updateing 'actualPlane' variable
+                if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                    actualPlane = 0;
                 break;
 
             case 1:
                 //                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                actualPlane = 1;
+                if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                    actualPlane = 1;
                 break;
 
             case 2:
                 //                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                actualPlane = 2;
+                if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                    actualPlane = 2;
                 break;
 
             case 3:
                 //                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
-                actualPlane = 3;
+                if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                    actualPlane = 3;
                 break;
 
             case 4:
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2);
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                // ActualPlane depends ond last actualPlane
-                switch (actualPlane) {
+                // ActualPlane depends ond last 'actualPlane' variable
+                switch (ap) {
                     case 0:
-                        com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                        actualPlane = 40;
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                            actualPlane = 40;
                         break;
                     case 1:
-                        com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                        actualPlane = 41;
+                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                            actualPlane = 41;
                         break;
                     case 2:
-                        com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                        actualPlane = 42;
+                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                            actualPlane = 42;
                         break;
                     case 3:
-                        com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                        actualPlane = 43;
+                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                            actualPlane = 43;
                         break;
                     default:
-                        com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
-                        actualPlane = 40;
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                            actualPlane = 40;
                         break;
 
                 }
@@ -583,26 +589,26 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2);
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 //                actualPlane = 5;
-                switch (actualPlane) {
+                switch (ap) {
                     case 0:
-                        com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                        actualPlane = 50;
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                            actualPlane = 50;
                         break;
                     case 1:
-                        com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                        actualPlane = 51;
+                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                            actualPlane = 51;
                         break;
                     case 2:
-                        com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                        actualPlane = 52;
+                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                            actualPlane = 52;
                         break;
                     case 3:
-                        com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                        actualPlane = 53;
+                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                            actualPlane = 53;
                         break;
                     default:
-                        com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                        actualPlane = 50;
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                            actualPlane = 50;
                         break;
                 }
                 break;
@@ -643,7 +649,6 @@ int main(int argc, char *argv[]) {
     ofstream file;
 
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
-
 
 
 
