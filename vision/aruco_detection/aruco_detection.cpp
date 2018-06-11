@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include "rt_communication.h"
+#include "led_handler.h"
 
 using namespace std;
 using namespace cv;
@@ -41,6 +42,7 @@ namespace {
 /*
  *
  */
+// Read camera calibration parameters
 static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeffs, int &vidWidth, int &vidHeight) {
     FileStorage fs(filename, FileStorage::READ);
     if (!fs.isOpened())
@@ -51,26 +53,34 @@ static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeff
     fs["image_height"] >> vidHeight;
     return true;
 }
-
+// Rotate an angle defined by rot to rvec vector
 static void rotation(Vec3d& rvec, Vec3d& tvec, Vec3d& rot, Vec3d& nrvec) {
     Affine3d pose = Affine3d(rvec, tvec);
     Affine3d rotation = Affine3d::Identity().rotate(rot);
     pose = pose * rotation;
     nrvec = pose.rvec();
 }
-
+// Bonding aruco vectors with robot tool vectors to be able to control the robot more intuitively
 static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, int actualPlane, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
     ofstream file;
-    file.open("robotToMarkerTvec.txt", fstream::in | fstream::out | fstream::app);
+//    ofstream fileX;
+//    ofstream fileY;
+//    ofstream fileZ;
+//    ofstream fileXt;
+//    ofstream fileYt;
+//    ofstream fileZt;
+    file.open("setPointOfView.txt", fstream::in | fstream::out | fstream::app);
+//    fileX.open("forExcel_X.txt", fstream::in | fstream::out | fstream::app);
+//    fileY.open("forExcel_Y.txt", fstream::in | fstream::out | fstream::app);
+//    fileZ.open("forExcel_Z.txt", fstream::in | fstream::out | fstream::app);
+//    fileXt.open("forExcel_Xt.txt", fstream::in | fstream::out | fstream::app);
+//    fileYt.open("forExcel_Yt.txt", fstream::in | fstream::out | fstream::app);
+//    fileZt.open("forExcel_Zt.txt", fstream::in | fstream::out | fstream::app);
     file << "______________________" << endl;
 
     double x;
     double y;
     double z;
-
-    Affine3d rotation90X = Affine3d::Identity().rotate(Vec3d(CV_PI / 2, 0, 0));
-    Affine3d rotation90Y = Affine3d::Identity().rotate(Vec3d(0, CV_PI / 2, 0));
-    Affine3d rotation90Z = Affine3d::Identity().rotate(Vec3d(0, 0, CV_PI / 2));
 
     Vec3d vr90X = Vec3d(CV_PI / 2, 0, 0);
     Vec3d vr90Y = Vec3d(0, CV_PI / 2, 0);
@@ -111,7 +121,16 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
             x = 0.29680;
             y = -0.11554;
             z = 0.18190;
+            
+            
+            
             nrvec = rvec;
+            
+//            rotation(nrvec, tvec, vr90mZ, nrvec);
+//            rotation(nrvec, tvec, vr90Y, nrvec);
+//            robotToMarkerRvec(0) = nrvec(0);
+//            robotToMarkerRvec(1) = nrvec(1);
+//            robotToMarkerRvec(2) = nrvec(2);
 
             robotToMarkerRvec(0) = -nrvec(2);
             robotToMarkerRvec(1) = nrvec(0);
@@ -316,10 +335,8 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
                     robotToMarkerRvec(2) = -nrvec(1);
                     break;
                 default:
-
                     break;
             }
-
             break;
         case 5:
             //TCP_3
@@ -399,10 +416,8 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
                     robotToMarkerRvec(2) = -nrvec(1);
                     break;
                 default:
-
                     break;
             }
-
             break;
         default:
             break;
@@ -423,6 +438,19 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
     cout << "_________________________" << endl;
     cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
     cout << "RobotToMarkerRvec: " << endl << robotToMarkerRvec << endl;
+    
+//    fileX << rvec(0) << endl;
+//    fileY << rvec(1) << endl;
+//    fileZ << rvec(2) << endl;
+//    fileXt << tvec(0) << endl;
+//    fileYt << tvec(1) << endl;
+//    fileZt << tvec(2) << endl;
+//    fileX.close();
+//    fileY.close();
+//    fileZ.close();
+//    fileXt.close();
+//    fileYt.close();
+//    fileZt.close();
 
     file << "tvec: " << endl;
     file << "[";
@@ -472,7 +500,7 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
     file << "_________________________" << endl;
     file.close();
 }
-
+// Check all markers in the frame and sends the necessary information to the robot
 static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
     // check if there are any marker detected
     if (ids.size() < 1) return;
@@ -480,6 +508,7 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
     bool detected = false;
     int nextpp = -1;
     int w = -1;
+    bool err = true;
     // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
     for (int i = 0; i < ids.size(); i++) {
         if (ids[i] == 6 || ids[i] == 7) {
@@ -533,26 +562,34 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
             case 0:
                 //                com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
                 // Check if it was send correctly before updateing 'actualPlane' variable
-                if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) ) {
                     actualPlane = 0;
+                    err = false;
+                }
                 break;
 
             case 1:
                 //                com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) ) {
                     actualPlane = 1;
+                    err = false;
+                }
                 break;
 
             case 2:
                 //                com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) ) {
                     actualPlane = 2;
+                    err = false;
+                }
                 break;
 
             case 3:
                 //                com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2);
-                if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) )
+                if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2, M_PI / 2) ) {
                     actualPlane = 3;
+                    err = false;
+                }
                 break;
 
             case 4:
@@ -561,24 +598,34 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 // ActualPlane depends ond last 'actualPlane' variable
                 switch (ap) {
                     case 0:
-                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) ) {
                             actualPlane = 40;
+                            err = false;
+                        }
                         break;
                     case 1:
-                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) ) {
                             actualPlane = 41;
+                            err = false;
+                        }
                         break;
                     case 2:
-                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) ) {
                             actualPlane = 42;
+                            err = false;
+                        }
                         break;
                     case 3:
-                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) ) {
                             actualPlane = 43;
+                            err = false;
+                        }
                         break;
                     default:
-                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) )
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, -M_PI / 2, -M_PI / 2, M_PI / 2) ) {
                             actualPlane = 40;
+                            err = false;
+                        }
                         break;
 
                 }
@@ -591,24 +638,34 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
                 //                actualPlane = 5;
                 switch (ap) {
                     case 0:
-                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) ) {
                             actualPlane = 50;
+                            err = false;
+                        }
                         break;
                     case 1:
-                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                        if( com.movej(-M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) ) {
                             actualPlane = 51;
+                            err = false;
+                        }
                         break;
                     case 2:
-                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                        if( com.movej(-M_PI, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) ) {
                             actualPlane = 52;
+                            err = false;
+                        }
                         break;
                     case 3:
-                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                        if( com.movej(M_PI / 2, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) ) {
                             actualPlane = 53;
+                            err = false;
+                        }
                         break;
                     default:
-                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) )
+                        if( com.movej(0, -M_PI / 2, -M_PI / 2, 0, M_PI / 2, M_PI / 2) ) {
                             actualPlane = 50;
+                            err = false;
+                        }
                         break;
                 }
                 break;
@@ -622,8 +679,8 @@ static void markerProcesor(RtCommunication& com, vector< int >& ids, vector< Vec
 
         // save reference position
         poseRef = Affine3d(rvecs[w], tvecs[w]);
-        // wait for the robot to go to refPoint
-        usleep(5500000);
+        // wait for the robot to go to refPoint if there is no error
+        if (!err) usleep(5500000);
     }
 }
 
@@ -651,7 +708,9 @@ int main(int argc, char *argv[]) {
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
 
 
-
+    // LED
+//    LedHandler ledH;
+    
     // COMMUNICATION TEST
     //    RtDataHandler dataHandler;
     //    //    RtCommunication com("192.168.238.142");
@@ -804,6 +863,8 @@ int main(int argc, char *argv[]) {
             //            com.halt();
             //            destroyWindow("RPi Camera");
             file.close();
+            LedHandler ledH;
+            ledH.stopLeds();
             break;
         }
     }

@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/aruco_detection.o \
 	${OBJECTDIR}/communication.o \
 	${OBJECTDIR}/data_handler.o \
+	${OBJECTDIR}/led_handler.o \
 	${OBJECTDIR}/print_out.o \
 	${OBJECTDIR}/rt_communication.o \
 	${OBJECTDIR}/rt_data_handler.o
@@ -81,6 +82,11 @@ ${OBJECTDIR}/data_handler.o: data_handler.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/data_handler.o data_handler.cpp
+
+${OBJECTDIR}/led_handler.o: led_handler.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/led_handler.o led_handler.cpp
 
 ${OBJECTDIR}/print_out.o: print_out.cpp
 	${MKDIR} -p ${OBJECTDIR}

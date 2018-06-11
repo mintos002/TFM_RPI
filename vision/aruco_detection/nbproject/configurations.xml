@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>communication.h</itemPath>
       <itemPath>data_handler.h</itemPath>
+      <itemPath>led_handler.h</itemPath>
       <itemPath>print_out.h</itemPath>
       <itemPath>rt_communication.h</itemPath>
       <itemPath>rt_data_handler.h</itemPath>
@@ -21,13 +22,20 @@
       <itemPath>dist/Debug/GNU-Linux/cmdout.txt</itemPath>
       <itemPath>communication.cpp</itemPath>
       <itemPath>data_handler.cpp</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_X.txt</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_Xt.txt</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_Y.txt</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_Yt.txt</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_Z.txt</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/forExcel_Zt.txt</itemPath>
+      <itemPath>led_handler.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
       <itemPath>dist/Debug/GNU-Linux/poseDif.txt</itemPath>
       <itemPath>print_out.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/robotParams.txt</itemPath>
-      <itemPath>dist/Debug/GNU-Linux/robotToMarkerTvec.txt</itemPath>
       <itemPath>rt_communication.cpp</itemPath>
       <itemPath>rt_data_handler.cpp</itemPath>
+      <itemPath>dist/Debug/GNU-Linux/setPointOfView.txt</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -57,6 +65,7 @@
           <linkerLibItems>
             <linkerOptionItem>-I/usr/local/include/opencv -I/usr/local/include -L/usr/local/lib -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_photo -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_img_hash -lopencv_line_descriptor -lopencv_optflow -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_surface_matching -lopencv_tracking -lopencv_datasets -lopencv_text -lopencv_dnn -lopencv_plot -lopencv_ml -lopencv_xfeatures2d -lopencv_shape -lopencv_video -lopencv_ximgproc -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_flann -lopencv_xobjdetect -lopencv_imgcodecs -lopencv_objdetect -lopencv_xphoto -lopencv_imgproc -lopencv_core -lraspicam -lraspicam_cv</linkerOptionItem>
             <linkerOptionItem>-pthread</linkerOptionItem>
+            <linkerOptionItem>-lwiringPi</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -72,6 +81,36 @@
       </item>
       <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_X.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Xt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Y.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Yt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Z.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Zt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="dist/Debug/GNU-Linux/out_camera_data_640_100.xml"
             ex="false"
             tool="3"
@@ -84,10 +123,14 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="dist/Debug/GNU-Linux/robotToMarkerTvec.txt"
+      <item path="dist/Debug/GNU-Linux/setPointOfView.txt"
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="led_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="led_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -134,6 +177,36 @@
       </item>
       <item path="dist/Debug/GNU-Linux/cmdout.txt" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_X.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Xt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Y.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Yt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Z.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU-Linux/forExcel_Zt.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="dist/Debug/GNU-Linux/out_camera_data_640_100.xml"
             ex="false"
             tool="3"
@@ -146,10 +219,14 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="dist/Debug/GNU-Linux/robotToMarkerTvec.txt"
+      <item path="dist/Debug/GNU-Linux/setPointOfView.txt"
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="led_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="led_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
       </item>
