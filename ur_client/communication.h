@@ -1,22 +1,26 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   communication.h
- * Author: minto
+ * ur_communication.h
  *
- * Created on 5 de marzo de 2018, 12:48
+ * Copyright 2015 Thomas Timm Andersen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#ifndef UR_COMMUNICATION_H_
+#define UR_COMMUNICATION_H_
 
-#include "print_out.h"
 #include "data_handler.h"
-
+#include "do_output.h"
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,23 +40,25 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-class Communication {
-public:
-    Communication(/*std::condition_variable& msg_cond,*/ std::string host);
-    bool connected;
-    DataHandler* robot_state;
-    bool start();
-    void halt();
-    std::string receive(int);
+
+class UrCommunication {
 private:
-    int pri_sockfd, sec_sockfd; // port number
-    struct sockaddr_in pri_serv_addr, sec_serv_addr; // sockets
-    struct hostent *server; //  server IP
-    bool keepalive;
-    std::thread comThread;
-    int flag;
-    void run();
+	int pri_sockfd_, sec_sockfd_;
+	struct sockaddr_in pri_serv_addr_, sec_serv_addr_;
+	struct hostent *server_;
+	bool keepalive_;
+	std::thread comThread_;
+	int flag_;
+	void run();
+
+public:
+	bool connected_;
+	DataHandler* robot_state_;
+
+	UrCommunication(std::condition_variable& msg_cond, std::string host);
+	bool start();
+	void halt();
+
 };
 
-#endif /* COMMUNICATION_H */
-
+#endif /* UR_COMMUNICATION_H_ */

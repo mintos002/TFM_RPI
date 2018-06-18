@@ -6,7 +6,11 @@
                    projectFiles="true">
       <itemPath>communication.h</itemPath>
       <itemPath>data_handler.h</itemPath>
+      <itemPath>do_output.h</itemPath>
       <itemPath>print_out.h</itemPath>
+      <itemPath>real_communication.h</itemPath>
+      <itemPath>robot_state_RT.h</itemPath>
+      <itemPath>ur_driver.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -17,8 +21,12 @@
                    projectFiles="true">
       <itemPath>communication.cpp</itemPath>
       <itemPath>data_handler.cpp</itemPath>
+      <itemPath>do_output.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>print_out.cpp</itemPath>
+      <itemPath>real_communication.cpp</itemPath>
+      <itemPath>robot_state_RT.cpp</itemPath>
+      <itemPath>ur_driver.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -55,11 +63,27 @@
       </item>
       <item path="data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="do_output.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="do_output.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="print_out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="real_communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="real_communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="robot_state_RT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="robot_state_RT.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ur_driver.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ur_driver.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -90,11 +114,27 @@
       </item>
       <item path="data_handler.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="do_output.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="do_output.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="print_out.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="print_out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="real_communication.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="real_communication.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="robot_state_RT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="robot_state_RT.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ur_driver.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ur_driver.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

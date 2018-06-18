@@ -13,7 +13,10 @@
 
 #include <cstdlib>
 #include <stdio.h>
-#include "communication.h" // has printing also
+#include <iostream>
+#include <condition_variable>
+#include "communication.h"
+#include "ur_driver.h" // has printing also
 //#include "print_out.h"
 
 using namespace std;
@@ -24,11 +27,15 @@ using namespace std;
 int main(int argc, char** argv) {
 //    Communication com("192.168.1.128");
     print_debug("START MAIN");
-    bool comack;
-    Communication robot("158.42.206.10");
-//    Communication robot("192.168.238.142");
-    comack = robot.start();
-    
+    condition_variable msg_cond;
+    condition_variable rt_msg_cond;
+    UrRealtimeCommunication* com = new UrRealtimeCommunication(rt_msg_cond, "158.42.206.10");
+    com->start();
+    int w=0;
+    while(w<500){
+        w++;
+        usleep(1000000);
+    };
 //    robot.run();
     print_debug("FIN MAIN");
     

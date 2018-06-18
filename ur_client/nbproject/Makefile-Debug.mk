@@ -37,8 +37,12 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/communication.o \
 	${OBJECTDIR}/data_handler.o \
+	${OBJECTDIR}/do_output.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/print_out.o
+	${OBJECTDIR}/print_out.o \
+	${OBJECTDIR}/real_communication.o \
+	${OBJECTDIR}/robot_state_RT.o \
+	${OBJECTDIR}/ur_driver.o
 
 
 # C Compiler Flags
@@ -75,6 +79,11 @@ ${OBJECTDIR}/data_handler.o: data_handler.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/data_handler.o data_handler.cpp
 
+${OBJECTDIR}/do_output.o: do_output.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/do_output.o do_output.cpp
+
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -84,6 +93,21 @@ ${OBJECTDIR}/print_out.o: print_out.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/print_out.o print_out.cpp
+
+${OBJECTDIR}/real_communication.o: real_communication.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/real_communication.o real_communication.cpp
+
+${OBJECTDIR}/robot_state_RT.o: robot_state_RT.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/robot_state_RT.o robot_state_RT.cpp
+
+${OBJECTDIR}/ur_driver.o: ur_driver.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ur_driver.o ur_driver.cpp
 
 # Subprojects
 .build-subprojects:

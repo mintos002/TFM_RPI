@@ -13,11 +13,11 @@
 
 #include "data_handler.h"
 
-DataHandler::DataHandler(/*std::condition_variable& msg_cond*/) {
+DataHandler::DataHandler(std::condition_variable& msg_cond) {
     version_msg.majorVersion = 0;
     version_msg.minorVersion = 0;
     new_data_available = false;
-    //	pMsg_cond = &msg_cond;
+    pMsg_cond = &msg_cond;
     DataHandler::setDisconnected();
     robot_mode_running = robotModeV33::ROBOT_MODE_RUNNING;
 }

@@ -166,7 +166,7 @@ struct version_message {
 
 class DataHandler {
 public:
-    DataHandler(/*std::condition_variable& msg_cond*/);
+    DataHandler(std::condition_variable& msg_cond);
     ~DataHandler();
     double getVersion();
     double getTime();
@@ -224,7 +224,7 @@ private:
 
     std::recursive_mutex val_lock; // Locks the variables while unpack parses data;
 
-//    std::condition_variable* pMsg_cond; //Signals that new vars are available
+    std::condition_variable* pMsg_cond; //Signals that new vars are available
     bool new_data_available; //to avoid spurious wakes
     unsigned char robot_mode_running;
 
