@@ -29,6 +29,8 @@
 #include "led_handler.h"
 #include "communication.h"
 
+#define STOP 49
+
 using namespace std;
 using namespace cv;
 
@@ -448,6 +450,18 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
     int nextpp = -1;
     int w = -1;
     bool err = true;
+    
+    bool ok = false;
+    for (int i = 0; i < ids.size(); i++) {
+        if (ids[i] == STOP) {
+            while(!ok) {
+                com->setSpeed(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0);
+                print_warning("STOP marker detected!");
+                return;
+            }
+        }
+    }
+        
     // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
     for (int i = 0; i < ids.size(); i++) {
         if (ids[i] == 6 || ids[i] == 7) {
@@ -671,7 +685,7 @@ int main(int argc, char *argv[]) {
     bool ToolIsOpen = false;
     // COMMUNICATION TEST
     //    RtDataHandler dataHandler;
-    //    //    RtCommunication com("192.168.238.142");
+    //    RtCommunication com("192.168.238.142");
     condition_variable msg_cond;
     condition_variable msg_cond_rt;
 
@@ -759,17 +773,18 @@ int main(int argc, char *argv[]) {
         cout << "** isProgramRunning? =" << comN->robot_state->isProgramRunning() << endl << endl;
         cout << "** isEmergencyStopped? =" << comN->robot_state->isEmergencyStopped() << endl << endl;
         cout << "** isProtectiveStopped? =" << comN->robot_state->isProtectiveStopped() << endl << endl;
-        cout << "Tool info = " << endl << comN->robot_state->getToolInfo() << endl;
-        cout << "Digital Outputs = " << endl << com->rt_data_handler->getDigitalOutputs() << endl;
-        cout << "Program state = " << endl << com->rt_data_handler->getProgramState() << endl;
+        
+        cout << "Digital Outputs = " << com->rt_data_handler->getDigitalOutputs() << endl;
+        cout << "Program state = " << com->rt_data_handler->getProgramState() << endl;
         vector< double > tool = com->rt_data_handler->getToolVectorActual();
         cout << "Tool vector actual = " << endl << "[ ";
         for(int i = 0; i < tool.size(); i++)
             cout << tool[i] << " ";
         cout << "]" << endl;
+        
         ofstream fileP;
         fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
-        vector< double > TCP;
+//        vector< double > TCP;
         //        TCP = dataHandler.getToolVectorTarget();
         //        double version = dataHandler.getVersion();
         //        double time = dataHandler.getTime();
