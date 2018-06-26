@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>capture_frame.h</itemPath>
       <itemPath>communication.h</itemPath>
       <itemPath>data_handler.h</itemPath>
       <itemPath>led_handler.h</itemPath>
@@ -19,6 +20,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>aruco_detection.cpp</itemPath>
+      <itemPath>capture_frame.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/cmdout.txt</itemPath>
       <itemPath>communication.cpp</itemPath>
       <itemPath>data_handler.cpp</itemPath>
@@ -64,6 +66,10 @@
         </linkerTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="capture_frame.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="capture_frame.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="communication.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -137,6 +143,10 @@
         </linkerTool>
       </compileType>
       <item path="aruco_detection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="capture_frame.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="capture_frame.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="communication.cpp" ex="false" tool="1" flavor2="0">
       </item>
