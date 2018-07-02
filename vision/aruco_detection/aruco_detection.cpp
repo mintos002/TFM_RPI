@@ -27,9 +27,10 @@
 #include <atomic>
 #include <thread>
 
+#include "communication.h"
 #include "rt_communication.h"
 #include "led_handler.h"
-#include "communication.h"
+#include "capture_frame.h"
 
 #define STOP_ID 49
 #define TOOL_DO 4
@@ -449,21 +450,21 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
 }
 // Check all markers in the frame and sends the necessary information to the robot
 
-static void markerProcesor(RtCommunication* com, Communication* comN, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, int& wait, bool& ToolIsOpen, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
+static void markerProcesor(RtCommunication* com, Communication* comN, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, atomic<bool>* e_stop, bool& ToolIsOpen, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
     // check if there are any marker detected
     if (ids.size() < 1) return;
 
-    // if STOP marker is detected stop robot
-    bool ok = false;
-    for (int i = 0; i < ids.size(); i++) {
-        if (ids[i] == STOP_ID) {
-            while (!ok) {
-                com->setSpeed(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0);
-                print_warning("STOP marker detected!");
-                return;
-            }
-        }
-    }
+    //////    // if STOP marker is detected stop robot
+    //////    bool ok = false;
+    //////    for (int i = 0; i < ids.size(); i++) {
+    //////        if (ids[i] == STOP_ID) {
+    //////            while (!ok) {
+    //////                com->setSpeed(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    //////                print_warning("STOP marker detected!");
+    //////                return;
+    //////            }
+    //////        }
+    //////    }
 
     // initatie detection tag and posible next position
     bool detected = false;
@@ -471,24 +472,25 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
     int w = -1;
     bool err = true;
 
-    // if robot movement is not waiting
-    if (wait == -1) {
-        // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
-        for (int i = 0; i < ids.size(); i++) {
-            if (ids[i] == 6 || ids[i] == 7) {
-                switch (ids[i]) {
-                    case 6:
-                        if (!ToolIsOpen) {
-                            if (com->set_digital_out(4, true)) ToolIsOpen = true;
-                        }
-                        break;
-                    case 7:
-                        if (ToolIsOpen) {
-                            if (com->set_digital_out(4, false)) ToolIsOpen = false;
-                        }
-                        break;
-                }
-            } else {
+    //////    // if robot movement is not waiting
+    //////    if (wait == -1) {
+    // check for marker ids, if id = 6 or 7 open/close the tool, if is = to last Id, move to that point.
+    for (int i = 0; i < ids.size(); i++) {
+        if (ids[i] == 6 || ids[i] == 7) {
+            switch (ids[i]) {
+                case 6:
+                    if (!ToolIsOpen) {
+                        if (com->set_digital_out(TOOL_DO, true)) ToolIsOpen = true;
+                    }
+                    break;
+                case 7:
+                    if (ToolIsOpen) {
+                        if (com->set_digital_out(TOOL_DO, false)) ToolIsOpen = false;
+                    }
+                    break;
+            }
+        } else {
+            if (ids[i] >= 0 && ids[i] <= 5) {
                 if (ids[i] == remainId && (ids[i] == actualPlane || ids[i] == (int) actualPlane / 10)) {
                     // if detected, send offset movement and exit the function
                     detected = true;
@@ -519,9 +521,11 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
             }
         }
     }
+    //////    }
 
     // if remainId is not in ids, go to nextpp reference position
-    if (!detected && wait == -1) {
+    //////    if (!detected && wait == -1) {
+    if (!detected) {
         remainId = nextpp;
         // To be able to switch betwen planes without issues, ap needs to be substracted by 40 or 50
         int ap = actualPlane;
@@ -643,45 +647,70 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
             default:
                 return;
         }
-        // increment wait variable
-        if (!err) {
-            // wait for the robot to go to refPoint if there is no error
-            wait++;
-            // save reference position
-            poseRef = Affine3d(rvecs[w], tvecs[w]);
-        }
-    }
+        //////        // increment wait variable
+        //////        if (!err) {
+        //////            // wait for the robot to go to refPoint if there is no error
+        //////            wait++;
+        //////            // save reference position
+        //////            poseRef = Affine3d(rvecs[w], tvecs[w]);
+        //////        }
+        //////    }
 
-    if (wait > -1) {
+        //////    if (wait > -1) {
+        //////        // wait 5s, the robot will take 4s to reach the reference position
+        //////        if (wait == 0) {
+        //////            print_info("The robot is going to the initial position...");
+        //////            // wait a second because communication in port 30002 is 10Hz
+        //////            usleep(1000000);
+        //////        }
+        //////
+        //////        // check if port comN is conected and program is running
+        //////        if (comN->connected && comN->robot_state->isProgramRunning() && wait < 22) {
+        //////            // wait while program is running
+        //////
+        //////            // Wait till robot stop moveing
+        //////            cout << "Waiting" << endl;
+        //////            usleep(150000);
+        //////            wait++;
+        //////
+        //////        } else { // else, wait 4.5 seconds
+        //////            if (wait < 22) {
+        //////                usleep(150000);
+        //////                wait++;
+        //////            }
+        //////        }
+        //////
+        //////        if (wait >= 22) wait = -1;
+
         // wait 5s, the robot will take 4s to reach the reference position
-        if (wait == 0) {
-            print_info("The robot is going to the initial position...");
-            // wait a second because communication in port 30002 is 10Hz
+        print_info("The robot is going to the initial position...");
+
+        // save reference position
+        poseRef = Affine3d(rvecs[w], tvecs[w]);
+        // wait for the robot to go to refPoint if there is no error
+        if (!err) {
             usleep(1000000);
-        }
-
-        // check if port comN is conected and program is running
-        if (comN->connected && comN->robot_state->isProgramRunning() && wait < 22) {
-            // wait while program is running
-
-            // Wait till robot stop moveing
-            cout << "Waiting" << endl;
-            usleep(150000);
-            wait++;
-
-        } else { // else, wait 4.5 seconds
-            if (wait < 22) {
-                usleep(150000);
-                wait++;
+            // check if port comN is conected and program is running
+            if (comN->connected && comN->robot_state->isProgramRunning()) {
+                int i = 0;
+                // wait while program is running
+                while (comN->robot_state->isProgramRunning() && i < 44 && !*e_stop) {
+                    cout << "MP E_STOP: " << *e_stop << endl;
+                    // Wait till robot stop moveing
+                    //                    cout << "Waiting" << endl;
+                    // because every frame takes 125ms aprox
+                    usleep(125000);
+                    i++;
+                }
+            } else { // else, wait 4.5 seconds
+                usleep(4500000);
             }
         }
-
-        if (wait >= 22) wait = -1;
     }
 }
 
 /*
- * ///////////////////////////////////////////////////////////////////////////////////
+ * // /////////////////////////////////////////////////////////////////////////////////
  */
 int main(int argc, char *argv[]) {
     CommandLineParser parser(argc, argv, keys);
@@ -714,7 +743,6 @@ int main(int argc, char *argv[]) {
     condition_variable msg_cond_rt;
 
     RtCommunication* com = new RtCommunication(msg_cond_rt, "158.42.206.10");
-    //    RtCommunication com("158.42.206.10");
     Communication* comN = new Communication(msg_cond, "158.42.206.10");
     comN->start();
     usleep(2000000);
@@ -793,126 +821,156 @@ int main(int argc, char *argv[]) {
     int remainId = -1;
     int actualPlane = -1;
     int wait = -1;
-    
-    atomic<bool> E_STOP (false);
+
+    CaptureFrame* capture_frame = new CaptureFrame(inputVideo, detectorParams, dictionary, STOP_ID);
+    capture_frame->start();
+    usleep(1000000);
+    atomic<bool>* E_STOP = &capture_frame->E_STOP;
+    bool keepalive = true;
+    ofstream fileP;
 
     // ////////////////////////////////////////////////////////////////
+    int loop_counter = 0;
+    //    while (inputVideo.grab()) {
+    while (keepalive) {
+        //        while (!capture_frame->E_STOP) {
+        while (!*E_STOP) {
+            loop_counter = 0;
+            double t = (double) getTickCount();
+            // Get Robot parameters
+            cout << "** isProgramRunning? =" << comN->robot_state->isProgramRunning() << endl << endl;
+            cout << "** isEmergencyStopped? =" << comN->robot_state->isEmergencyStopped() << endl << endl;
+            cout << "** isProtectiveStopped? =" << comN->robot_state->isProtectiveStopped() << endl << endl;
 
-    while (inputVideo.grab()) {
-//    while (true) {
-        double t = (double) getTickCount();
+            //            cout << "Digital Outputs = " << com->rt_data_handler->getDigitalOutputs() << endl;
+            //            cout << "Program state = " << com->rt_data_handler->getProgramState() << endl;
+            vector< double > tool = com->rt_data_handler->getToolVectorActual();
+            cout << "Tool vector actual = " << "[";
+            for (int i = 0; i < tool.size(); i++)
+                cout << tool[i] << " ";
+            cout << "]" << endl;
 
-        // Get Robot parameters
-        cout << "** isProgramRunning? =" << comN->robot_state->isProgramRunning() << endl << endl;
-        cout << "** isEmergencyStopped? =" << comN->robot_state->isEmergencyStopped() << endl << endl;
-        cout << "** isProtectiveStopped? =" << comN->robot_state->isProtectiveStopped() << endl << endl;
+            vector< double > tool1 = comN->robot_state->getToolInfo();
+            cout << "Tool info = " << "[";
+            for (int i = 0; i < tool1.size(); i++)
+                cout << tool1[i] << " ";
+            cout << "]" << endl;
 
-        cout << "Digital Outputs = " << com->rt_data_handler->getDigitalOutputs() << endl;
-        cout << "Program state = " << com->rt_data_handler->getProgramState() << endl;
-        vector< double > tool = com->rt_data_handler->getToolVectorActual();
-        cout << "Tool vector actual = " << "[ ";
-        for (int i = 0; i < tool.size(); i++)
-            cout << tool[i] << " ";
-        cout << "]" << endl;
 
-        cout << "WAIIIIT: " << wait << endl;
+            cout << "E_STOP: " << *E_STOP << endl;
 
-        ofstream fileP;
-        fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
-        //        vector< double > TCP;
-        //        TCP = dataHandler.getToolVectorTarget();
-        //        double version = dataHandler.getVersion();
-        //        double time = dataHandler.getTime();
-        //        fileP << "Version = " << version << endl;
-        //        fileP << "Time = " << time << endl;
-        //        fileP << "TCP = [" << TCP[0] << ", " << TCP[1] << ", " << TCP[2] << "]" << endl;
-        fileP.close();
+            //////            cout << "WAIIIIT: " << wait << endl;
 
-        Mat image, imageCopy;
-        inputVideo.retrieve(image);
+            //////            Mat image, imageCopy;
+            //////        inputVideo.retrieve(image);
+            //////            image = capture_frame->getImage();
 
-        // START time measuring
-        double tick = (double) getTickCount();
 
-        vector< int > ids;
-        vector< vector< Point2f > > corners, rejected;
-        vector< Vec3d > rvecs, tvecs;
+            // START time measuring
+            double tick = (double) getTickCount();
 
-        // detect markers and estimate pose
-        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
-        if (ids.size() > 0) {
-            // Calculate poses
-            aruco::estimatePoseSingleMarkers(corners, markerLength, camMatrix, distCoeffs, rvecs, tvecs);
-        }
-        // END time measurint
-        double currentTime = ((double) getTickCount() - tick) / getTickFrequency();
-        totalTime += currentTime;
-        totalIterations++;
-        if (totalIterations % vidFps == 0) {
-            cout << "Detection Time = " << currentTime * 1000 << " ms " << "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
-        }
+            vector< int > ids;
+            vector< vector< Point2f > > corners, rejected;
+            vector< Vec3d > rvecs, tvecs;
 
-        // Draw midle rectangle and lines in image
-        image.copyTo(imageCopy);
-        //        int x = 270;
-        //        int y = 190;
-        //        int width = 100;
-        //        int height = width;
-        //        Point pt1(x, y), pt2(x + width, y + height);
-        //        // tvecs ~ 0.49
-        //        rectangle(imageCopy, pt1, pt2, Scalar(255, 0, 0), 2);
-        //
-        //        line(imageCopy, Point(0, 360), Point(640, 360), Scalar(255, 0, 255), 2, 8);
-        //        line(imageCopy, Point(320, 0), Point(320, 480), Scalar(255, 0, 255), 2, 8);
+            // detect markers and estimate pose
+            //////        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
+            Mat image, imageCopy;
+            //            image = capture_frame->getImage();
+            //            ids = capture_frame->getIds();
+            //            corners = capture_frame->getCorners();
+            //            rejected = capture_frame->getRegected();
+            capture_frame->cfDetectMarkers(image, corners, ids, rejected);
 
-        // Draw marker vectors
-        if (ids.size() > 0) {
-            aruco::drawDetectedMarkers(imageCopy, corners, ids);
-            //            cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl << "CORNERS: " << endl << corners[0] << endl << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+            if (ids.size() > 0) {
+                // Calculate poses
+                aruco::estimatePoseSingleMarkers(corners, markerLength, camMatrix, distCoeffs, rvecs, tvecs);
+            }
+            // END time measurint
+            double currentTime = ((double) getTickCount() - tick) / getTickFrequency();
+            totalTime += currentTime;
+            totalIterations++;
+            if (totalIterations % vidFps == 0) {
+                cout << "Detection Time = " << currentTime * 1000 << " ms " << "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
+            }
+
+            // Draw midle rectangle and lines in image
+            image.copyTo(imageCopy);
+            //        int x = 270;
+            //        int y = 190;
+            //        int width = 100;
+            //        int height = width;
+            //        Point pt1(x, y), pt2(x + width, y + height);
+            //        // tvecs ~ 0.49
+            //        rectangle(imageCopy, pt1, pt2, Scalar(255, 0, 0), 2);
+            //
+            //        line(imageCopy, Point(0, 360), Point(640, 360), Scalar(255, 0, 255), 2, 8);
+            //        line(imageCopy, Point(320, 0), Point(320, 480), Scalar(255, 0, 255), 2, 8);
+
+            // Draw marker vectors
+            if (ids.size() > 0) {
+                aruco::drawDetectedMarkers(imageCopy, corners, ids);
+                //            cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl << "CORNERS: " << endl << corners[0] << endl << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+
+                cout << "----------------" << endl;
+                // Process the distance btw markers and reference point
+                //                if (!capture_frame->E_STOP)
+                markerProcesor(com, comN, ids, rvecs, tvecs, E_STOP, ToolIsOpen, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
+
+                for (unsigned int i = 0; i < ids.size(); i++) {
+                    aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
+                }
+                // Actualize carrying
+                cout << "idsCurrent = " << ids.size() << endl;
+                cout << "remainId = " << remainId << endl;
+                cout << "actualPlane = " << actualPlane << endl;
+
+                for (unsigned int i = 0; i < ids.size(); i++) {
+                    poses2[ids[i]] = Affine3d(rvecs[i], tvecs[i]);
+                }
+            }
+
+            // Show rejected markers if there are
+            if (showRejected && rejected.size() > 0)
+                aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
             cout << "----------------" << endl;
-            // Process the distance btw markers and reference point
-            markerProcesor(com, comN, ids, rvecs, tvecs, wait, ToolIsOpen, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
 
-            for (unsigned int i = 0; i < ids.size(); i++) {
-                aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
+            namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
+            imshow("RPi Camera", imageCopy);
+
+            char key = (char) waitKey(waitTime);
+            if (key == 27) {
+                //            destroyWindow("RPi Camera");
+                file.close();
+                capture_frame->halt();
+                com->halt();
+                comN->halt();
+                keepalive = false;
+                break;
             }
-            // Actualize carrying
-            cout << "idsCurrent = " << ids.size() << endl;
-            cout << "remainId = " << remainId << endl;
-            cout << "actualPlane = " << actualPlane << endl;
-
-            for (unsigned int i = 0; i < ids.size(); i++) {
-                poses2[ids[i]] = Affine3d(rvecs[i], tvecs[i]);
+            double cTime = ((double) getTickCount() - t) / getTickFrequency();
+            tTime += cTime;
+            tIterations++;
+            if (tIterations % vidFps == 0) {
+                fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
+                fileP << "Detection Time TOTAL = " << cTime * 1000 << " ms " << "(Mean = " << 1000 * tTime / double(tIterations) << " ms)" << endl;
+                fileP.close();
             }
         }
-
-        // Show rejected markers if there are
-        if (showRejected && rejected.size() > 0)
-            aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
-
-        cout << "----------------" << endl;
-
-        namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
-        imshow("RPi Camera", imageCopy);
-
-        char key = (char) waitKey(waitTime);
-        if (key == 27) {
-            //            destroyWindow("RPi Camera");
-            file.close();
-            com->halt();
-            comN->halt();
-            break;
+        bool ok = false;
+        if (loop_counter == 0) {
+            while (!ok)
+                ok = com->setSpeed(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         }
-        double cTime = ((double) getTickCount() - t) / getTickFrequency();
-        tTime += cTime;
-        tIterations++;
-        if (tIterations % vidFps == 0) {
-            fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
-            fileP << "Detection Time TOTAL = " << cTime * 1000 << " ms " << "(Mean = " << 1000 * tTime / double(tIterations) << " ms)" << endl;
-            fileP.close();
-        }
+        loop_counter++;
+        // if E_STOP print warning
+        if (*E_STOP) /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            print_warning("STOP marker detected!");
+        // stop leds if exit
+        if (!keepalive)
+            com->ledH.stopLeds();
+
     }
-
     return 0;
 }
