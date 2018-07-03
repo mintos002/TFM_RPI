@@ -73,21 +73,21 @@ static void rotation(Vec3d& rvec, Vec3d& tvec, Vec3d& rot, Vec3d& nrvec) {
 // Bonding aruco vectors with robot tool vectors to be able to control the robot more intuitively
 
 static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, int actualPlane, Vec3d& robotToMarkerTvec, Vec3d& robotToMarkerRvec) {
-    ofstream file;
-    //    ofstream fileX;
-    //    ofstream fileY;
-    //    ofstream fileZ;
-    //    ofstream fileXt;
-    //    ofstream fileYt;
-    //    ofstream fileZt;
-    file.open("setPointOfView.txt", fstream::in | fstream::out | fstream::app);
-    //    fileX.open("forExcel_X.txt", fstream::in | fstream::out | fstream::app);
-    //    fileY.open("forExcel_Y.txt", fstream::in | fstream::out | fstream::app);
-    //    fileZ.open("forExcel_Z.txt", fstream::in | fstream::out | fstream::app);
-    //    fileXt.open("forExcel_Xt.txt", fstream::in | fstream::out | fstream::app);
-    //    fileYt.open("forExcel_Yt.txt", fstream::in | fstream::out | fstream::app);
-    //    fileZt.open("forExcel_Zt.txt", fstream::in | fstream::out | fstream::app);
-    file << "______________________" << endl;
+//    ofstream file;
+//        ofstream fileX;
+//        ofstream fileY;
+//        ofstream fileZ;
+//        ofstream fileXt;
+//        ofstream fileYt;
+//        ofstream fileZt;
+//    file.open("setPointOfView.txt", fstream::in | fstream::out | fstream::app);
+//        fileX.open("forExcel_X.txt", fstream::in | fstream::out | fstream::app);
+//        fileY.open("forExcel_Y.txt", fstream::in | fstream::out | fstream::app);
+//        fileZ.open("forExcel_Z.txt", fstream::in | fstream::out | fstream::app);
+//        fileXt.open("forExcel_Xt.txt", fstream::in | fstream::out | fstream::app);
+//        fileYt.open("forExcel_Yt.txt", fstream::in | fstream::out | fstream::app);
+//        fileZt.open("forExcel_Zt.txt", fstream::in | fstream::out | fstream::app);
+//    file << "______________________" << endl;
 
     double x;
     double y;
@@ -387,84 +387,72 @@ static void setPointOfView(int id, Vec3d& rvec, Vec3d& tvec, Affine3d poseRef, i
     //    cout << "RobotToMarkerTvec: " << endl << robotToMarkerTvec << endl;
     //    cout << "RobotToMarkerRvec: " << endl << robotToMarkerRvec << endl;
 
-    //    fileX << rvec(0) << endl;
-    //    fileY << rvec(1) << endl;
-    //    fileZ << rvec(2) << endl;
-    //    fileXt << tvec(0) << endl;
-    //    fileYt << tvec(1) << endl;
-    //    fileZt << tvec(2) << endl;
-    //    fileX.close();
-    //    fileY.close();
-    //    fileZ.close();
-    //    fileXt.close();
-    //    fileYt.close();
-    //    fileZt.close();
+//        fileX << rvec(0) << endl;
+//        fileY << rvec(1) << endl;
+//        fileZ << rvec(2) << endl;
+//        fileXt << tvec(0) << endl;
+//        fileYt << tvec(1) << endl;
+//        fileZt << tvec(2) << endl;
+//        fileX.close();
+//        fileY.close();
+//        fileZ.close();
+//        fileXt.close();
+//        fileYt.close();
+//        fileZt.close();
 
-    file << "tvec: " << endl;
-    file << "[";
-    file << tvec(0) << ", ";
-    file << tvec(1) << ", ";
-    file << tvec(2) << "]" << endl;
+//////    file << "tvec: " << endl;
+//////    file << "[";
+//////    file << tvec(0) << ", ";
+//////    file << tvec(1) << ", ";
+//////    file << tvec(2) << "]" << endl;
+//////
+//////    file << "rvec: " << endl;
+//////    file << "[";
+//////    file << rvec(0) << ", ";
+//////    file << rvec(1) << ", ";
+//////    file << rvec(2) << "]" << endl;
+//////
+//////    file << "reftvec: " << endl;
+//////    file << "[";
+//////    file << poseRef.translation()(0) << ", ";
+//////    file << poseRef.translation()(1) << ", ";
+//////    file << poseRef.translation()(2) << "]" << endl;
+//////
+//////    file << "ntvec: " << endl;
+//////    file << "[";
+//////    file << ntvec(0) << ", ";
+//////    file << ntvec(1) << ", ";
+//////    file << ntvec(2) << "]" << endl;
+//////
+//////    file << "robotToMarkerTvec: " << endl;
+//////    file << "[";
+//////    file << robotToMarkerTvec(0) << ", ";
+//////    file << robotToMarkerTvec(1) << ", ";
+//////    file << robotToMarkerTvec(2);
+//////    file << "]" << endl;
+//////
+//////    file << "robotToMarkerRvec: " << endl;
+//////    file << "[";
+//////    file << robotToMarkerRvec(0) << ", ";
+//////    file << robotToMarkerRvec(1) << ", ";
+//////    file << robotToMarkerRvec(2);
+//////    file << "]" << endl;
 
-    file << "rvec: " << endl;
-    file << "[";
-    file << rvec(0) << ", ";
-    file << rvec(1) << ", ";
-    file << rvec(2) << "]" << endl;
-
-    file << "reftvec: " << endl;
-    file << "[";
-    file << poseRef.translation()(0) << ", ";
-    file << poseRef.translation()(1) << ", ";
-    file << poseRef.translation()(2) << "]" << endl;
-
-    file << "ntvec: " << endl;
-    file << "[";
-    file << ntvec(0) << ", ";
-    file << ntvec(1) << ", ";
-    file << ntvec(2) << "]" << endl;
-
-    file << "robotToMarkerTvec: " << endl;
-    file << "[";
-    file << robotToMarkerTvec(0) << ", ";
-    file << robotToMarkerTvec(1) << ", ";
-    file << robotToMarkerTvec(2);
-    file << "]" << endl;
-
-    file << "robotToMarkerRvec: " << endl;
-    file << "[";
-    file << robotToMarkerRvec(0) << ", ";
-    file << robotToMarkerRvec(1) << ", ";
-    file << robotToMarkerRvec(2);
-    file << "]" << endl;
-
-    //    cout << "rvec: " << endl << rvec << endl;
-    //    cout << "tvec: " << endl << tvec << endl;
-    //    cout << "poseActual: " << endl << poseActual.matrix << endl;
-    //    cout << "poseRef: " << endl << poseRef.matrix << endl;
-    //    cout << "distFromRef: " << endl << distFromRef.matrix << endl;
-    //    cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
-    //    cout << "_________________________" << endl;
-    file << "_________________________" << endl;
-    file.close();
+        cout << "rvec: " << endl << rvec << endl;
+        cout << "tvec: " << endl << tvec << endl;
+//        cout << "poseActual: " << endl << poseActual.matrix << endl;
+//        cout << "poseRef: " << endl << poseRef.matrix << endl;
+//        cout << "distFromRef: " << endl << distFromRef.matrix << endl;
+//        cout << "TRANSLATION REF POINT" << endl << ntvec << endl;
+        cout << "_________________________" << endl;
+//////    file << "_________________________" << endl;
+//////    file.close();
 }
 // Check all markers in the frame and sends the necessary information to the robot
 
-static void markerProcesor(RtCommunication* com, Communication* comN, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, atomic<bool>* e_stop, bool& ToolIsOpen, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
+static void markerProcesor(RtCommunication* com, Communication* comN, vector< int >& ids, vector< Vec3d >& rvecs, vector< Vec3d >& tvecs, atomic<bool>* e_stop, bool& ToolIsOn, int& remainId, int& actualPlane, Affine3d& poseRef, vector< Affine3d >& poses2, Vec3d& lastSPOVrvec) { // Marcador antiguo marcador nuevo
     // check if there are any marker detected
     if (ids.size() < 1) return;
-
-    //////    // if STOP marker is detected stop robot
-    //////    bool ok = false;
-    //////    for (int i = 0; i < ids.size(); i++) {
-    //////        if (ids[i] == STOP_ID) {
-    //////            while (!ok) {
-    //////                com->setSpeed(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    //////                print_warning("STOP marker detected!");
-    //////                return;
-    //////            }
-    //////        }
-    //////    }
 
     // initatie detection tag and posible next position
     bool detected = false;
@@ -479,13 +467,13 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
         if (ids[i] == 6 || ids[i] == 7) {
             switch (ids[i]) {
                 case 6:
-                    if (!ToolIsOpen) {
-                        if (com->set_digital_out(TOOL_DO, true)) ToolIsOpen = true;
+                    if (!ToolIsOn) {
+                        if (com->set_digital_out(TOOL_DO, true)) ToolIsOn = true;
                     }
                     break;
                 case 7:
-                    if (ToolIsOpen) {
-                        if (com->set_digital_out(TOOL_DO, false)) ToolIsOpen = false;
+                    if (ToolIsOn) {
+                        if (com->set_digital_out(TOOL_DO, false)) ToolIsOn = false;
                     }
                     break;
             }
@@ -498,14 +486,14 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
                     Vec3d poseRFinal;
                     Vec3d poseDif = tvecs[i] - poses2[ids[i]].translation();
 
-                    ofstream file;
-                    file.open("poseDif.txt", fstream::in | fstream::out | fstream::app);
-                    file << "Posedif: " << endl << "[" << poseDif(0) << ", " << poseDif(2) << ", " << poseDif(2) << "]" << endl;
-                    file.close();
+//                    ofstream file;
+//                    file.open("poseDif.txt", fstream::in | fstream::out | fstream::app);
+//                    file << "Posedif: " << endl << "[" << poseDif(0) << ", " << poseDif(2) << ", " << poseDif(2) << "]" << endl;
+//                    file.close();
 
                     // setting a limit to not overload the server by positions
                     double limT = 0.02;
-                    double limR = 0.02;
+                    double limR = 0.09;
                     setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, actualPlane, poseTFinal, poseRFinal);
                     Vec3d rotDif = poseRFinal - lastSPOVrvec;
                     if (abs(poseDif(0)) > limT || abs(poseDif(1)) > limT || abs(poseDif(2)) > limT ||
@@ -728,14 +716,14 @@ int main(int argc, char *argv[]) {
     bool showRejected = parser.has("r");
     float markerLength = parser.get<float>("l");
 
-    ofstream file;
+//    ofstream file;
 
     cout << "The length of the marker side is: " << markerLength << " m" << endl;
 
 
     // LED
     //    LedHandler ledH;
-    bool ToolIsOpen = false;
+    bool ToolIsOn;
     // COMMUNICATION TEST
     //    RtDataHandler dataHandler;
     //    RtCommunication com("192.168.238.142");
@@ -756,16 +744,16 @@ int main(int argc, char *argv[]) {
     // open an close tool until the sended cmd is ok
     bool ok = false;
     while (!ok) {
+        usleep(1000000);
         if (com->set_digital_out(TOOL_DO, true)) {
-            ToolIsOpen = true;
+            ToolIsOn = true;
             ok = true;
         }
         usleep(1000000);
         if (com->set_digital_out(TOOL_DO, false)) {
-            ToolIsOpen = false;
+            ToolIsOn = false;
             ok = true;
         }
-        usleep(1000000);
     }
 
     // Create DetectorParameters and refine corners
@@ -820,14 +808,14 @@ int main(int argc, char *argv[]) {
     Affine3d poseRef;
     int remainId = -1;
     int actualPlane = -1;
-    int wait = -1;
+//    int wait = -1;
 
     CaptureFrame* capture_frame = new CaptureFrame(inputVideo, detectorParams, dictionary, STOP_ID);
     capture_frame->start();
     usleep(1000000);
     atomic<bool>* E_STOP = &capture_frame->E_STOP;
     bool keepalive = true;
-    ofstream fileP;
+//    ofstream fileP;
 
     // ////////////////////////////////////////////////////////////////
     int loop_counter = 0;
@@ -841,9 +829,7 @@ int main(int argc, char *argv[]) {
             cout << "** isProgramRunning? =" << comN->robot_state->isProgramRunning() << endl << endl;
             cout << "** isEmergencyStopped? =" << comN->robot_state->isEmergencyStopped() << endl << endl;
             cout << "** isProtectiveStopped? =" << comN->robot_state->isProtectiveStopped() << endl << endl;
-
-            //            cout << "Digital Outputs = " << com->rt_data_handler->getDigitalOutputs() << endl;
-            //            cout << "Program state = " << com->rt_data_handler->getProgramState() << endl;
+            
             vector< double > tool = com->rt_data_handler->getToolVectorActual();
             cout << "Tool vector actual = " << "[";
             for (int i = 0; i < tool.size(); i++)
@@ -856,14 +842,11 @@ int main(int argc, char *argv[]) {
                 cout << tool1[i] << " ";
             cout << "]" << endl;
 
-
             cout << "E_STOP: " << *E_STOP << endl;
 
-            //////            cout << "WAIIIIT: " << wait << endl;
-
-            //////            Mat image, imageCopy;
+            //////        Mat image, imageCopy;
             //////        inputVideo.retrieve(image);
-            //////            image = capture_frame->getImage();
+            //////        image = capture_frame->getImage();
 
 
             // START time measuring
@@ -876,12 +859,9 @@ int main(int argc, char *argv[]) {
             // detect markers and estimate pose
             //////        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
             Mat image, imageCopy;
-            //            image = capture_frame->getImage();
-            //            ids = capture_frame->getIds();
-            //            corners = capture_frame->getCorners();
-            //            rejected = capture_frame->getRegected();
             capture_frame->cfDetectMarkers(image, corners, ids, rejected);
-
+            image.copyTo(imageCopy);
+            
             if (ids.size() > 0) {
                 // Calculate poses
                 aruco::estimatePoseSingleMarkers(corners, markerLength, camMatrix, distCoeffs, rvecs, tvecs);
@@ -895,7 +875,7 @@ int main(int argc, char *argv[]) {
             }
 
             // Draw midle rectangle and lines in image
-            image.copyTo(imageCopy);
+//            image.copyTo(imageCopy);
             //        int x = 270;
             //        int y = 190;
             //        int width = 100;
@@ -915,8 +895,8 @@ int main(int argc, char *argv[]) {
                 cout << "----------------" << endl;
                 // Process the distance btw markers and reference point
                 //                if (!capture_frame->E_STOP)
-                markerProcesor(com, comN, ids, rvecs, tvecs, E_STOP, ToolIsOpen, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
-
+                markerProcesor(com, comN, ids, rvecs, tvecs, E_STOP, ToolIsOn, remainId, actualPlane, poseRef, poses2, lastSPOVrvec);
+                
                 for (unsigned int i = 0; i < ids.size(); i++) {
                     aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
                 }
@@ -935,14 +915,33 @@ int main(int argc, char *argv[]) {
                 aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
             cout << "----------------" << endl;
-
+            char sh[30];
+            char st[30];
+            if(!*E_STOP) {
+                if(actualPlane == -1) {
+                    sprintf(sh, "Waiting for a position marker", actualPlane);
+                } else {
+                    sprintf(sh, "Actual plane: %d", actualPlane);
+                }
+                putText(imageCopy, sh, Point(5,40), FONT_HERSHEY_DUPLEX, 1, Scalar(0,180,50), 2);
+                if(ToolIsOn) {
+                    sprintf(st, "Tool is close");
+                } else {
+                    sprintf(st, "Tool is open");
+                }
+                putText(imageCopy, st, Point(5,80), FONT_HERSHEY_DUPLEX, 1, Scalar(0,180,50), 2);
+            } else {
+                sprintf(sh, "STOP marker");
+                putText(imageCopy, sh, Point(10,200), FONT_HERSHEY_DUPLEX, 2, Scalar(0,0,255), 3);
+                putText(imageCopy, "detected!", Point(10,260), FONT_HERSHEY_DUPLEX, 2, Scalar(0,0,255), 3);
+            }
             namedWindow("RPi Camera", CV_WINDOW_AUTOSIZE);
             imshow("RPi Camera", imageCopy);
 
             char key = (char) waitKey(waitTime);
             if (key == 27) {
                 //            destroyWindow("RPi Camera");
-                file.close();
+//                file.close();
                 capture_frame->halt();
                 com->halt();
                 comN->halt();
@@ -953,9 +952,7 @@ int main(int argc, char *argv[]) {
             tTime += cTime;
             tIterations++;
             if (tIterations % vidFps == 0) {
-                fileP.open("robotParams.txt", fstream::in | fstream::out | fstream::app);
-                fileP << "Detection Time TOTAL = " << cTime * 1000 << " ms " << "(Mean = " << 1000 * tTime / double(tIterations) << " ms)" << endl;
-                fileP.close();
+                cout << "Detection Time TOTAL = " << cTime * 1000 << " ms " << "(Mean = " << 1000 * tTime / double(tIterations) << " ms)" << endl;;
             }
         }
         bool ok = false;
