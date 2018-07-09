@@ -24,12 +24,6 @@
       <itemPath>dist/Debug/GNU-Linux/cmdout.txt</itemPath>
       <itemPath>communication.cpp</itemPath>
       <itemPath>data_handler.cpp</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_X.txt</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_Xt.txt</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_Y.txt</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_Yt.txt</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_Z.txt</itemPath>
-      <itemPath>dist/Release/GNU-Linux/forExcel_Zt.txt</itemPath>
       <itemPath>led_handler.cpp</itemPath>
       <itemPath>dist/Debug/GNU-Linux/out_camera_data_640_100.xml</itemPath>
       <itemPath>dist/Debug/GNU-Linux/poseDif.txt</itemPath>
@@ -100,36 +94,6 @@
             flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/setPointOfView.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_X.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Xt.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Y.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Yt.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Z.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Zt.txt"
             ex="false"
             tool="3"
             flavor2="0">
@@ -207,36 +171,6 @@
             flavor2="0">
       </item>
       <item path="dist/Debug/GNU-Linux/setPointOfView.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_X.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Xt.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Y.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Yt.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Z.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="dist/Release/GNU-Linux/forExcel_Zt.txt"
             ex="false"
             tool="3"
             flavor2="0">

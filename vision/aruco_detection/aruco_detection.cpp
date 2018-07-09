@@ -493,7 +493,7 @@ static void markerProcesor(RtCommunication* com, Communication* comN, vector< in
 
                     // setting a limit to not overload the server by positions
                     double limT = 0.02;
-                    double limR = 0.09;
+                    double limR = 0.07;
                     setPointOfView(ids[i], rvecs[i], tvecs[i], poseRef, actualPlane, poseTFinal, poseRFinal);
                     Vec3d rotDif = poseRFinal - lastSPOVrvec;
                     if (abs(poseDif(0)) > limT || abs(poseDif(1)) > limT || abs(poseDif(2)) > limT ||
